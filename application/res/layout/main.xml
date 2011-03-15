@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/main_layout_root" android:orientation="vertical"
+	android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:text="@string/enter_phone_number" />
+	<EditText android:id="@+id/phone_number" android:hint="@string/phone_number_hint"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:inputType="phone" />
+	<Button android:id="@+id/perform_lookup" android:layout_height="wrap_content"
+		android:text="@string/perform_lookup_label" android:onClick="performLookupClick"
+		android:layout_width="fill_parent">
+	</Button>
+	<TextView android:id="@+id/lookup_status" android:visibility="gone"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:text="@string/enter_phone_number" />
+	<com.blundell.tut.LoaderImageView android:visibility="gone"
+		android:id="@+id/image" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" />
+    <TextView android:id="@+id/text"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="#FFF"
+              />
+</LinearLayout>

@@ -1,0 +1,34 @@
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated GUI files
+*R.java
+
+# Maven build output
+target
+
+# Eclipse
+.settings
+.classpath
+.project
+
+# Idea
+.idea
+
+# Android generated output
+gen
+bin
+
+# OS X annoyingness
+.DS_Store
+
+# crypto keys
+*.keystore
+

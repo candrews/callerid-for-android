@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="enter_phone_number">Phone number to lookup</string>
+    <string name="phone_number_hint">Phone number</string>
+    <string name="perform_lookup_label">Lookup CallerID</string>
+    <string name="app_name">CallerID</string>
+    <string name="lookup_error">Error performing lookup</string>
+    <string name="lookup_no_result">No data available</string>
+    <string name="lookup_in_progress">Please wait...</string>
+    
+    <string name="default_lookup_url"><![CDATA[https://www.integralblue.com/callerid/callerid.json.php?format=json&num={0}]]></string>
+</resources>

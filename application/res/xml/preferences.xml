@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+		<PreferenceCategory
+                android:title="Popup">
+                <ListPreference
+                        android:title="Vertical position"
+                        android:summary="Set the vertical location of the popup"
+                        android:key="popupVerticalPosition"
+                        android:defaultValue="80"
+                        android:entries="@array/vertical_positions"
+                        android:entryValues="@array/vertical_position_values" />
+                <ListPreference
+                        android:title="Horizontal position"
+                        android:summary="Set the horizontal location of the popup"
+                        android:key="popupHorizontal"
+                        android:defaultValue="1"
+                        android:entries="@array/horizontal_positions"
+                        android:entryValues="@array/horizontal_position_values" />
+        </PreferenceCategory>
+		<PreferenceCategory
+                android:title="Lookup source">
+		        <EditTextPreference
+		                android:name="CallerID Lookup URL"
+		                android:summary="Use {0} for where the phone number will go"
+		                android:defaultValue="@string/default_lookup_url"
+		                android:title="Set the URL used to perform Caller ID lookups"
+		                android:key="editTextPref" />
+        </PreferenceCategory>
+</PreferenceScreen>
