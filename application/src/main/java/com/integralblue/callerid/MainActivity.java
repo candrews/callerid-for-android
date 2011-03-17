@@ -4,6 +4,7 @@ import com.blundell.tut.LoaderImageView;
 import com.google.inject.Inject;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import roboguice.activity.RoboActivity;
@@ -28,6 +29,9 @@ public class MainActivity extends RoboActivity {
 	
 	@InjectView(R.id.text)
 	TextView text;
+	
+	@InjectView(R.id.perform_lookup)
+	Button performLookup;
 	
 	@Inject
 	CallerIDLookup callerIDLookup;
@@ -90,6 +94,13 @@ public class MainActivity extends RoboActivity {
      // Injection doesn't happen until you call setContentView()
         
         setContentView(R.layout.main);
+        
+        // Because we want compatibility with Android 1.5, we can't use the new xml-style android:onClick method of binding click listeners :-(
+        performLookup.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	performLookupClick(v);
+            }
+        });
     }
     
     public void performLookupClick(View button){

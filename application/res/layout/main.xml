@@ -8,7 +8,7 @@
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
 		android:inputType="phone" />
 	<Button android:id="@+id/perform_lookup" android:layout_height="wrap_content"
-		android:text="@string/perform_lookup_label" android:onClick="performLookupClick"
+		android:text="@string/perform_lookup_label"
 		android:layout_width="fill_parent">
 	</Button>
 	<TextView android:id="@+id/lookup_status" android:visibility="gone"
