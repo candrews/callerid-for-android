@@ -4,6 +4,7 @@
     <string name="phone_number_hint">Phone number</string>
     <string name="perform_lookup_label">Lookup CallerID</string>
     <string name="app_name">CallerID</string>
+    <string name="app_description">The CallerID app uses a web service to look up CallerID information when a call is received from a number not in the address book.</string>
     <string name="lookup_error">Error performing lookup</string>
     <string name="lookup_no_result">No data available</string>
     <string name="lookup_in_progress">Please wait...</string>
