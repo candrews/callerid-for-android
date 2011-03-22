@@ -3,10 +3,14 @@ package com.integralblue.callerid;
 import com.blundell.tut.LoaderImageView;
 import com.google.inject.Inject;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
@@ -102,6 +106,27 @@ public class MainActivity extends RoboActivity {
             }
         });
     }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+    
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.settings:
+			Toast.makeText(this, "Settings!", Toast.LENGTH_LONG).show();
+			return true;
+		case R.id.help:
+			Toast.makeText(this, "Not yet implemented", Toast.LENGTH_LONG).show();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
     
     public void performLookupClick(View button){
 		// since we're about to start a new lookup,
