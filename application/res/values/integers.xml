@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<integer name="default_popup_vertical_gravity">80</integer>
+	<integer name="default_popup_horizontal_gravity">1</integer>
+</resources>

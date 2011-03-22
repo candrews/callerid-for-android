@@ -7,6 +7,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import roboguice.application.RoboApplication;
 import roboguice.config.AbstractAndroidModule;
+import roboguice.inject.SharedPreferencesName;
 import android.os.Build;
 
 import com.google.inject.Module;
@@ -21,6 +22,7 @@ public class CallerIDApplication extends RoboApplication {
     	modules.add(new AbstractAndroidModule() {
 			@Override
 			protected void configure() {
+				bindConstant().annotatedWith(SharedPreferencesName.class).to(this.getClass().getPackage().getName() + "_preferences"); 
 				bind(ContactsHelper.class).toProvider(ContactsHelperProvider.class).in(Scopes.SINGLETON);
 				bind(CallerIDLookup.class).to(HttpCallerIDLookup.class).in(Scopes.SINGLETON);
 				if(Integer.parseInt(Build.VERSION.SDK) < Build.VERSION_CODES.FROYO){

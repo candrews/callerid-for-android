@@ -2,6 +2,8 @@ package com.integralblue.callerid;
 
 import com.blundell.tut.LoaderImageView;
 import com.google.inject.Inject;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -118,7 +120,7 @@ public class MainActivity extends RoboActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.settings:
-			Toast.makeText(this, "Settings!", Toast.LENGTH_LONG).show();
+			startActivity(new Intent(this, PreferencesActivity.class));
 			return true;
 		case R.id.help:
 			Toast.makeText(this, "Not yet implemented", Toast.LENGTH_LONG).show();

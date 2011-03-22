@@ -5,25 +5,25 @@
                 <ListPreference
                         android:title="Vertical position"
                         android:summary="Set the vertical location of the popup"
-                        android:key="popupVerticalPosition"
-                        android:defaultValue="80"
-                        android:entries="@array/vertical_positions"
-                        android:entryValues="@array/vertical_position_values" />
+                        android:key="popup_vertical_gravity"
+                        android:defaultValue="@integer/default_popup_vertical_gravity"
+                        android:entries="@array/vertical_gravities"
+                        android:entryValues="@array/vertical_gravity_values" />
                 <ListPreference
                         android:title="Horizontal position"
                         android:summary="Set the horizontal location of the popup"
-                        android:key="popupHorizontal"
-                        android:defaultValue="1"
-                        android:entries="@array/horizontal_positions"
-                        android:entryValues="@array/horizontal_position_values" />
+                        android:key="popup_horizontal_gravity"
+                        android:defaultValue="@integer/default_popup_horizontal_gravity"
+                        android:entries="@array/horizontal_gravities"
+                        android:entryValues="@array/horizontal_gravity_values" />
         </PreferenceCategory>
 		<PreferenceCategory
                 android:title="Lookup source">
 		        <EditTextPreference
 		                android:name="CallerID Lookup URL"
-		                android:summary="Use {0} for where the phone number will go"
+		                android:summary="{0} is the phone number placeholder"
 		                android:defaultValue="@string/default_lookup_url"
 		                android:title="Set the URL used to perform Caller ID lookups"
-		                android:key="editTextPref" />
+		                android:key="lookup_url" />
         </PreferenceCategory>
 </PreferenceScreen>

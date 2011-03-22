@@ -9,5 +9,5 @@
     <string name="lookup_no_result">No data available</string>
     <string name="lookup_in_progress">Please wait...</string>
     
-    <string name="default_lookup_url"><![CDATA[https://www.integralblue.com/callerid/callerid.json.php?format=json&num={0}]]></string>
+    <string name="default_lookup_url"><![CDATA[http://www.integralblue.com/callerid/callerid.php?format=json&num={0}]]></string>
 </resources>

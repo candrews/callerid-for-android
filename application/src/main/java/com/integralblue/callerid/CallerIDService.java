@@ -4,10 +4,10 @@ import roboguice.service.RoboService;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
 import android.telephony.TelephonyManager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -47,6 +47,16 @@ public class CallerIDService extends RoboService {
 	
 	//@InjectResource(R.string.lookup_in_progress)
 	String lookupInProgress;
+
+	@Inject
+	SharedPreferences sharedPreferences;
+	
+
+	//@InjectResource(R.integer.default_popup_horizontal_gravity)
+	int defaultPopupHorizontalGravity;
+	
+	//@InjectResource(R.integer.default_popup_vertical_gravity)
+	int defaultPopupVerticalGravity;
 
 	class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 
@@ -140,6 +150,9 @@ public class CallerIDService extends RoboService {
 		lookupError = getString(R.string.lookup_error);
 		lookupInProgress = getString(R.string.lookup_in_progress);
 		
+		defaultPopupHorizontalGravity = getResources().getInteger(R.integer.default_popup_horizontal_gravity);
+		defaultPopupVerticalGravity = getResources().getInteger(R.integer.default_popup_vertical_gravity);
+		
 		WindowManager.LayoutParams params = new WindowManager.LayoutParams(
 				WindowManager.LayoutParams.WRAP_CONTENT,
 				WindowManager.LayoutParams.WRAP_CONTENT,
@@ -147,8 +160,18 @@ public class CallerIDService extends RoboService {
 				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
 						| WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
 				PixelFormat.TRANSLUCENT);
-		params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-		params.setTitle("Load Average");
+		//params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+		params.gravity = 0;
+		String popupVerticalGravity = sharedPreferences.getString("popup_vertical_gravity", null);
+		if(popupVerticalGravity == null)
+			params.gravity |= defaultPopupVerticalGravity;
+		else
+			params.gravity |= Integer.parseInt(popupVerticalGravity);
+		String popupHorizontalGravity = sharedPreferences.getString("popup_horizontal_gravity", null);
+		if(popupHorizontalGravity == null)
+			params.gravity |= defaultPopupHorizontalGravity;
+		else
+			params.gravity |= Integer.parseInt(popupHorizontalGravity);
 		toastLayout.setVisibility(View.GONE);
 		windowManager.addView(toastLayout, params);
 	}

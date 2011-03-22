@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="vertical_positions">
+    <string-array name="vertical_gravities">
     	<item>Top</item>
     	<item>Center</item>
     	<item>Bottom</item>
     </string-array>
-    <string-array name="vertical_position_values">
+    <string-array name="vertical_gravity_values">
     	<item>48</item>
     	<item>16</item>
     	<item>80</item>
     </string-array>
     
-    <string-array name="horizontal_positions">
+    <string-array name="horizontal_gravities">
     	<item>Left</item>
     	<item>Center</item>
     	<item>Right</item>
     </string-array>
-    <string-array name="horizontal_position_values">
+    <string-array name="horizontal_gravity_values">
     	<item>3</item>
     	<item>1</item>
     	<item>5</item>
