@@ -8,6 +8,15 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>callerid - Parent</name>
+  
+  <url>http://www.integralblue.com/callerid</url>
+  
+  <scm>
+    <connection>scm:git:https://git.gitorious.org/callerid-for-android/mainline.git</connection>
+    <developerConnection>scm:git:ssh://git@gitorious.org/callerid-for-android/mainline.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://gitorious.org/callerid-for-android</url>
+  </scm>
 
   <modules>
     <module>application</module>
