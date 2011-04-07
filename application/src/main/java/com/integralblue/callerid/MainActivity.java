@@ -1,9 +1,12 @@
 package com.integralblue.callerid;
 
-import com.blundell.tut.LoaderImageView;
-import com.google.inject.Inject;
-
+import roboguice.activity.RoboActivity;
+import roboguice.inject.InjectResource;
+import roboguice.inject.InjectView;
+import roboguice.util.Ln;
+import roboguice.util.RoboAsyncTask;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,12 +15,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-import roboguice.activity.RoboActivity;
-import roboguice.inject.InjectResource;
-import roboguice.inject.InjectView;
-import roboguice.util.Ln;
-import roboguice.util.RoboAsyncTask;
+
+import com.blundell.tut.LoaderImageView;
+import com.google.inject.Inject;
+import com.integralblue.callerid.contacts.ContactsHelper;
 
 public class MainActivity extends RoboActivity {
 	@InjectView(R.id.phone_number) EditText phoneNumber;
@@ -39,10 +40,19 @@ public class MainActivity extends RoboActivity {
 	@InjectView(R.id.perform_lookup)
 	Button performLookup;
 	
+	@InjectView(R.id.create_contact)
+	Button createContact;
+	
 	@Inject
 	CallerIDLookup callerIDLookup;
 	
+	@Inject
+	ContactsHelper contactsHelper;
+	
 	LookupAsyncTask currentLookupAsyncTask = null;
+
+	//contains the last lookup result
+	private CallerIDResult callerIDResult = null;
 	
 	class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 
@@ -63,10 +73,11 @@ public class MainActivity extends RoboActivity {
 		}
 
 		@Override
-		protected void onSuccess(CallerIDResult callerIDResult)
+		protected void onSuccess(CallerIDResult result)
 				throws Exception {
 			super.onSuccess(callerIDResult);
-			showCallerID(callerIDResult);
+			callerIDResult = result;
+			showCallerID();
 		}
 
 		@Override
@@ -107,6 +118,11 @@ public class MainActivity extends RoboActivity {
             	performLookupClick(v);
             }
         });
+        createContact.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	createContactClick(v);
+            }
+        });
     }
     
     @Override
@@ -123,7 +139,8 @@ public class MainActivity extends RoboActivity {
 			startActivity(new Intent(this, PreferencesActivity.class));
 			return true;
 		case R.id.help:
-			Toast.makeText(this, "Not yet implemented", Toast.LENGTH_LONG).show();
+			Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse("http://www.integralblue.com/callerid-for-android"));
+			startActivity(viewIntent);  
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -139,8 +156,13 @@ public class MainActivity extends RoboActivity {
 		currentLookupAsyncTask = new LookupAsyncTask(phoneNumber.getText());
 		currentLookupAsyncTask.execute();
     }
+    
+    public void createContactClick(View button){
+    	contactsHelper.createContactEditor(callerIDResult);
+    }
 
 	protected void showLookupInProgress() {
+		createContact.setVisibility(View.GONE);
 		image.setVisibility(View.VISIBLE);
 		text.setVisibility(View.VISIBLE);
 		text.setText(lookupInProgress);
@@ -148,21 +170,29 @@ public class MainActivity extends RoboActivity {
 	}
 
 	protected void showError(Throwable t) {
+		createContact.setVisibility(View.GONE);
 		text.setText(lookupError);
 		image.setImageDrawable(null);
 	}
 
 	protected void showNoResult() {
+		createContact.setVisibility(View.GONE);
 		text.setText(lookupNoResult);
 		image.setImageDrawable(null);
 	}
 
 	protected void hideCallerID() {
+		createContact.setVisibility(View.GONE);
 		image.setVisibility(View.GONE);
 		text.setVisibility(View.GONE);
 	}
 
-	protected void showCallerID(CallerIDResult callerIDResult) {
+	protected void showCallerID() {
+		if(contactsHelper.haveContactWithPhoneNumber(callerIDResult.getPhoneNumber())){
+			createContact.setVisibility(View.GONE);
+		}else{
+			createContact.setVisibility(View.VISIBLE);
+		}
 		image.setImageDrawable(null);
 		text.setText(callerIDResult.getName());
 	}

@@ -22,4 +22,9 @@
               android:layout_height="wrap_content"
               android:textColor="#FFF"
               />
+	<Button android:id="@+id/create_contact"  android:visibility="gone"
+		android:layout_height="wrap_content"
+		android:text="@string/create_contact"
+		android:layout_width="fill_parent">
+	</Button>
 </LinearLayout>
