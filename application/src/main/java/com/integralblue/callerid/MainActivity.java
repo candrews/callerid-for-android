@@ -1,11 +1,20 @@
 package com.integralblue.callerid;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -37,11 +46,17 @@ public class MainActivity extends RoboActivity {
 	@InjectView(R.id.text)
 	TextView text;
 	
+	@InjectView(R.id.address)
+	TextView address;
+	
 	@InjectView(R.id.perform_lookup)
 	Button performLookup;
 	
 	@InjectView(R.id.create_contact)
 	Button createContact;
+	
+	@InjectView(R.id.map_view)
+	MapView mapView;
 	
 	@Inject
 	CallerIDLookup callerIDLookup;
@@ -162,6 +177,8 @@ public class MainActivity extends RoboActivity {
     }
 
 	protected void showLookupInProgress() {
+		address.setVisibility(View.GONE);
+		mapView.setVisibility(View.GONE);
 		createContact.setVisibility(View.GONE);
 		image.setVisibility(View.VISIBLE);
 		text.setVisibility(View.VISIBLE);
@@ -170,18 +187,24 @@ public class MainActivity extends RoboActivity {
 	}
 
 	protected void showError(Throwable t) {
+		address.setVisibility(View.GONE);
+		mapView.setVisibility(View.GONE);
 		createContact.setVisibility(View.GONE);
 		text.setText(lookupError);
 		image.setImageDrawable(null);
 	}
 
 	protected void showNoResult() {
+		address.setVisibility(View.GONE);
+		mapView.setVisibility(View.GONE);
 		createContact.setVisibility(View.GONE);
 		text.setText(lookupNoResult);
 		image.setImageDrawable(null);
 	}
 
 	protected void hideCallerID() {
+		address.setVisibility(View.GONE);
+		mapView.setVisibility(View.GONE);
 		createContact.setVisibility(View.GONE);
 		image.setVisibility(View.GONE);
 		text.setVisibility(View.GONE);
@@ -192,6 +215,28 @@ public class MainActivity extends RoboActivity {
 			createContact.setVisibility(View.GONE);
 		}else{
 			createContact.setVisibility(View.VISIBLE);
+		}
+		if(callerIDResult.getAddress()==null){
+			address.setVisibility(View.GONE);
+		}else{
+			address.setVisibility(View.VISIBLE);
+			address.setText(callerIDResult.getAddress());
+			if(Geocoder.isPresent()){
+				//TODO the geocoder should be called from a thread separate from the UI
+				Geocoder geocoder = new Geocoder(this);
+				try{
+					List<Address> addresses = geocoder.getFromLocationName(callerIDResult.getAddress(), 1);
+					if(addresses.size()>0){
+						Address address = addresses.get(0);
+				        mapView.getController().setZoom(16);
+						mapView.getController().setCenter(new GeoPoint(address.getLatitude(),address.getLongitude()));
+						mapView.setVisibility(View.VISIBLE);
+					}
+				}catch(IOException e){
+					Ln.e(e);
+					//ignore the exception. Perhaps we should show an error... but eh, let's not.
+				}
+			}
 		}
 		image.setImageDrawable(null);
 		text.setText(callerIDResult.getName());

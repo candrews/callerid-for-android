@@ -22,6 +22,15 @@
               android:layout_height="wrap_content"
               android:textColor="#FFF"
               />
+    <TextView android:id="@+id/address" android:visibility="gone"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="#FFF"
+              />
+    <org.osmdroid.views.MapView android:layout_width="fill_parent"
+    	android:visibility="gone"
+		android:layout_height="fill_parent"
+		android:id="@+id/map_view" />
 	<Button android:id="@+id/create_contact"  android:visibility="gone"
 		android:layout_height="wrap_content"
 		android:text="@string/create_contact"

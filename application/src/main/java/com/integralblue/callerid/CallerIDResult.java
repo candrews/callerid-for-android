@@ -16,8 +16,16 @@ public class CallerIDResult implements Serializable {
 
 	final String name;
 	
-	public CallerIDResult(String phoneNumber, String name){
+	final String address;
+
+	public String getAddress() {
+		return address;
+	}
+	
+	
+	public CallerIDResult(String phoneNumber, String name, String address){
 		this.phoneNumber=phoneNumber;
 		this.name=name;
+		this.address=address;
 	}
 }
