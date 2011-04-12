@@ -12,11 +12,13 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent">
 	    <com.blundell.tut.LoaderImageView
+    		android:visibility="gone"
 			android:id="@+id/image"
 			android:layout_width="wrap_content"
 			android:layout_height="fill_parent"
 			/>
 	    <TextView android:id="@+id/text"
+    		android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:textColor="#FFF"
@@ -28,7 +30,7 @@
               android:textColor="#FFF"
               />
     <org.osmdroid.views.MapView android:layout_width="fill_parent"
-    	android:visibility="visible"
+    	android:visibility="gone"
 		android:layout_height="fill_parent"
 		android:id="@+id/map_view" />
 </LinearLayout>

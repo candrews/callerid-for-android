@@ -11,26 +11,7 @@
 		android:text="@string/perform_lookup_label"
 		android:layout_width="fill_parent">
 	</Button>
-	<TextView android:id="@+id/lookup_status" android:visibility="gone"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:text="@string/enter_phone_number" />
-	<com.blundell.tut.LoaderImageView android:visibility="gone"
-		android:id="@+id/image" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" />
-    <TextView android:id="@+id/text"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:textColor="#FFF"
-              />
-    <TextView android:id="@+id/address" android:visibility="gone"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:textColor="#FFF"
-              />
-    <org.osmdroid.views.MapView android:layout_width="fill_parent"
-    	android:visibility="gone"
-		android:layout_height="fill_parent"
-		android:id="@+id/map_view" />
+	<include layout="@layout/toast" />
 	<Button android:id="@+id/create_contact"  android:visibility="gone"
 		android:layout_height="wrap_content"
 		android:text="@string/create_contact"
