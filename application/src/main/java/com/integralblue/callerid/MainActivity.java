@@ -1,9 +1,8 @@
 package com.integralblue.callerid;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
@@ -65,6 +64,8 @@ public class MainActivity extends RoboActivity {
 	ContactsHelper contactsHelper;
 	
 	LookupAsyncTask currentLookupAsyncTask = null;
+	
+	GeocoderAsyncTask geocoderAsyncTask = null;
 
 	//contains the last lookup result
 	private CallerIDResult callerIDResult = null;
@@ -109,6 +110,51 @@ public class MainActivity extends RoboActivity {
 		protected void onInterrupted(Exception e) {
 			super.onInterrupted(e);
 			hideCallerID();
+		}
+	};
+	
+	class GeocoderAsyncTask extends RoboAsyncTask<Address> {
+
+		final String locationName;
+		
+		final Geocoder geocoder = new Geocoder(MainActivity.this);
+
+		public GeocoderAsyncTask(String locationName) {
+			this.locationName = locationName;
+		}
+
+		public Address call() throws Exception {
+			List<Address> addresses = geocoder.getFromLocationName(locationName, 1);
+			if(addresses.size()==1){
+				return addresses.get(0);
+			}else{
+				return null;
+			}
+		}
+
+		@Override
+		protected void onSuccess(Address address)
+				throws Exception {
+			if(address == null){
+				mapView.setVisibility(View.GONE);
+			}else{
+		        mapView.getController().setZoom(16);
+				mapView.getController().setCenter(new GeoPoint(address.getLatitude(),address.getLongitude()));
+				mapView.setVisibility(View.VISIBLE);
+			}
+		}
+
+		@Override
+		protected void onException(Exception e) throws RuntimeException {
+			Ln.e(e);
+			showError(e);
+			mapView.setVisibility(View.GONE);
+		}
+
+		@Override
+		protected void onInterrupted(Exception e) {
+			super.onInterrupted(e);
+			mapView.setVisibility(View.GONE);
 		}
 	};
 	
@@ -167,6 +213,8 @@ public class MainActivity extends RoboActivity {
 		// we want to cancel any lookups in progress
 		if (currentLookupAsyncTask != null)
 			currentLookupAsyncTask.cancel(true);
+		if (geocoderAsyncTask != null)
+			geocoderAsyncTask.cancel(true);
     	showLookupInProgress();
 		currentLookupAsyncTask = new LookupAsyncTask(phoneNumber.getText());
 		currentLookupAsyncTask.execute();
@@ -221,22 +269,12 @@ public class MainActivity extends RoboActivity {
 		}else{
 			address.setVisibility(View.VISIBLE);
 			address.setText(callerIDResult.getAddress());
-			if(Geocoder.isPresent()){
-				//TODO the geocoder should be called from a thread separate from the UI
-				Geocoder geocoder = new Geocoder(this);
-				try{
-					List<Address> addresses = geocoder.getFromLocationName(callerIDResult.getAddress(), 1);
-					if(addresses.size()>0){
-						Address address = addresses.get(0);
-				        mapView.getController().setZoom(16);
-						mapView.getController().setCenter(new GeoPoint(address.getLatitude(),address.getLongitude()));
-						mapView.setVisibility(View.VISIBLE);
-					}
-				}catch(IOException e){
-					Ln.e(e);
-					//ignore the exception. Perhaps we should show an error... but eh, let's not.
-				}
-			}
+			// since we're about to start a new lookup,
+			// we want to cancel any lookups in progress
+			if (geocoderAsyncTask != null)
+				geocoderAsyncTask.cancel(true);
+			geocoderAsyncTask = new GeocoderAsyncTask(callerIDResult.getAddress());
+			geocoderAsyncTask.execute();
 		}
 		image.setImageDrawable(null);
 		text.setText(callerIDResult.getName());

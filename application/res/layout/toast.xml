@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/toast_layout_root"
-              android:orientation="horizontal"
+              android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:padding="10dp"
               android:background="#DAAA"
               >
-    <com.blundell.tut.LoaderImageView
-      android:id="@+id/image"
-      android:layout_width="wrap_content"
-      android:layout_height="fill_parent"
-      />
-    <TextView android:id="@+id/text"
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+	    <com.blundell.tut.LoaderImageView
+			android:id="@+id/image"
+			android:layout_width="wrap_content"
+			android:layout_height="fill_parent"
+			/>
+	    <TextView android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:textColor="#FFF"
+            />
+    </LinearLayout>
+    <TextView android:id="@+id/address" android:visibility="gone"
               android:layout_width="wrap_content"
-              android:layout_height="fill_parent"
+              android:layout_height="wrap_content"
               android:textColor="#FFF"
               />
+    <org.osmdroid.views.MapView android:layout_width="fill_parent"
+    	android:visibility="visible"
+		android:layout_height="fill_parent"
+		android:id="@+id/map_view" />
 </LinearLayout>
