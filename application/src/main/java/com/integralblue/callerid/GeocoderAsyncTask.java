@@ -23,6 +23,7 @@ public class GeocoderAsyncTask extends RoboAsyncTask<Address> {
 		((InjectorProvider)context).getInjector().injectMembers(this); //work around RoboGuice bug
 		this.locationName = locationName;
 		mapView = (MapView) layout.findViewById(R.id.map_view);
+		mapView.setBuiltInZoomControls(true);
 	}
 
 	public Address call() throws Exception {

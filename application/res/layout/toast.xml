@@ -5,32 +5,29 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:padding="10dp"
-              android:background="#DAAA"
               >
-	<LinearLayout
-		android:orientation="horizontal"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent">
-	    <com.blundell.tut.LoaderImageView
-    		android:visibility="gone"
-			android:id="@+id/image"
-			android:layout_width="wrap_content"
-			android:layout_height="fill_parent"
-			/>
-	    <TextView android:id="@+id/text"
-    		android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:textColor="#FFF"
-            />
-    </LinearLayout>
+	<com.blundell.tut.LoaderImageView
+		android:visibility="gone"
+		android:id="@+id/image"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+	/>
+	<TextView android:id="@+id/text"
+		android:visibility="gone"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textColor="#FFF"
+	/>
     <TextView android:id="@+id/address" android:visibility="gone"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:textColor="#FFF"
-              />
-    <org.osmdroid.views.MapView android:layout_width="fill_parent"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textColor="#FFF"
+	/>
+    <org.osmdroid.views.MapView
     	android:visibility="gone"
+    	android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
-		android:id="@+id/map_view" />
+		android:layout_weight="1"
+		android:id="@+id/map_view"
+		 />
 </LinearLayout>
