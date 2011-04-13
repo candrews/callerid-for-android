@@ -77,6 +77,7 @@ public class MainActivity extends RoboActivity {
         Ln.d("onCreate");
         
      // Injection doesn't happen until you call setContentView()
+        setContentView(R.layout.main);
         
         // Because we want compatibility with Android 1.5, we can't use the new xml-style android:onClick method of binding click listeners :-(
         performLookup.setOnClickListener(new View.OnClickListener() {
