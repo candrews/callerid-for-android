@@ -34,6 +34,7 @@ public class NewContactsHelper implements ContactsHelper {
 		intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
 		intent.putExtra(ContactsContract.Intents.Insert.NAME, result.getName());
 		intent.putExtra(ContactsContract.Intents.Insert.PHONE, result.getPhoneNumber());
+		if(result.getAddress()!=null) intent.putExtra(ContactsContract.Intents.Insert.POSTAL, result.getAddress());
 		activityProvider.get().startActivity(intent);
 	}
 

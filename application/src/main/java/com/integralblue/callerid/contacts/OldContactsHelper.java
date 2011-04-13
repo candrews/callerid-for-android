@@ -36,6 +36,7 @@ public class OldContactsHelper implements ContactsHelper {
 	    final Intent intent = new Intent(Contacts.Intents.Insert.ACTION, Contacts.People.CONTENT_URI);
 	    intent.putExtra(Contacts.Intents.Insert.NAME, result.getName());
 	    intent.putExtra(Contacts.Intents.Insert.PHONE, result.getPhoneNumber());
+	    if(result.getAddress()!=null) intent.putExtra(Contacts.Intents.Insert.POSTAL, result.getAddress());
 	    activityProvider.get().startActivity(intent);
 	}
 }
