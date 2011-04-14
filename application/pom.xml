@@ -38,6 +38,23 @@
 			<artifactId>slf4j-android</artifactId>
 			<version>1.6.1-RC1</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpmime</artifactId>
+		    <version>4.1.1</version>
+		    <exclusions>
+		    	<exclusion>
+		    		<!-- >org.slf4j:slf4j-android fulfills this dependency -->
+		    		<groupId>commons-logging</groupId>
+		    		<artifactId>commons-logging</artifactId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<!-- Included in Android -->
+		    		<groupId>org.apache.httpcomponents</groupId>
+		    		<artifactId>httpcore</artifactId>
+		    	</exclusion>
+		    </exclusions>
+		</dependency>
 		<!-- not in Maven
 		installed using:
 		wget http://osmdroid.googlecode.com/files/osmdroid-android-3.0.3.jar
