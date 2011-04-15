@@ -70,8 +70,12 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 		if(result.getAddress()==null){
 			address.setVisibility(View.GONE);
 		}else{
-			address.setVisibility(View.VISIBLE);
 			address.setText(result.getAddress());
+			if(result.getName().equals(result.getAddress()))
+				//when the name and address are the same, there's no reason to say the same thing twice
+				address.setVisibility(View.GONE);
+			else
+				address.setVisibility(View.VISIBLE);
 			// since we're about to start a new lookup,
 			// we want to cancel any lookups in progress
 			if (geocoderAsyncTask != null)
