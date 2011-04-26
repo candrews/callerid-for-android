@@ -35,7 +35,7 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	CallerIDLookup callerIDLookup;
 
 	public LookupAsyncTask(CharSequence phoneNumber, View layout) {
-		((InjectorProvider)context).getInjector().injectMembers(this); //work around RoboGuice bug
+		((InjectorProvider)context).getInjector().injectMembers(this); //work around RoboGuice bug: https://code.google.com/p/roboguice/issues/detail?id=93
 		this.layout = layout;
 		this.phoneNumber = phoneNumber;
 		text = (TextView) layout.findViewById(R.id.text);

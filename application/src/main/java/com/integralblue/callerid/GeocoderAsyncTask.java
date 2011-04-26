@@ -20,7 +20,7 @@ public class GeocoderAsyncTask extends RoboAsyncTask<Address> {
 	final Geocoder geocoder = new Geocoder(context);
 
 	public GeocoderAsyncTask(String locationName, View layout) {
-		((InjectorProvider)context).getInjector().injectMembers(this); //work around RoboGuice bug
+		((InjectorProvider)context).getInjector().injectMembers(this); //work around RoboGuice bug: https://code.google.com/p/roboguice/issues/detail?id=93
 		this.locationName = locationName;
 		mapView = (MapView) layout.findViewById(R.id.map_view);
 		mapView.setBuiltInZoomControls(true);
