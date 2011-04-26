@@ -13,8 +13,10 @@ import android.os.Build;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 import com.integralblue.callerid.contacts.ContactsHelper;
+import com.integralblue.callerid.geocoder.Geocoder;
 import com.integralblue.callerid.inject.ContactsHelperProvider;
 import com.integralblue.callerid.inject.FroyoHttpClientProvider;
+import com.integralblue.callerid.inject.GeocoderHelperProvider;
 
 public class CallerIDApplication extends RoboApplication {
     protected void addApplicationModules(List<Module> modules) {
@@ -25,6 +27,7 @@ public class CallerIDApplication extends RoboApplication {
 				bindConstant().annotatedWith(SharedPreferencesName.class).to(this.getClass().getPackage().getName() + "_preferences"); 
 				bind(ContactsHelper.class).toProvider(ContactsHelperProvider.class).in(Scopes.SINGLETON);
 				bind(CallerIDLookup.class).to(HttpCallerIDLookup.class).in(Scopes.SINGLETON);
+				bind(Geocoder.class).toProvider(GeocoderHelperProvider.class).in(Scopes.SINGLETON);
 				if(Integer.parseInt(Build.VERSION.SDK) < Build.VERSION_CODES.FROYO){
 					bind(HttpClient.class).to(DefaultHttpClient.class).in(Scopes.SINGLETON);
 				}else{

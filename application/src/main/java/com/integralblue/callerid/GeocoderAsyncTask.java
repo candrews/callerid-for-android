@@ -5,11 +5,13 @@ import java.util.List;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
+import com.google.inject.Inject;
+import com.integralblue.callerid.geocoder.Geocoder;
+
 import roboguice.inject.InjectorProvider;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
 import android.location.Address;
-import android.location.Geocoder;
 import android.view.View;
 
 public class GeocoderAsyncTask extends RoboAsyncTask<Address> {
@@ -17,7 +19,8 @@ public class GeocoderAsyncTask extends RoboAsyncTask<Address> {
 	final String locationName;
 	final MapView mapView;
 	
-	final Geocoder geocoder = new Geocoder(context);
+	@Inject
+	Geocoder geocoder;
 
 	public GeocoderAsyncTask(String locationName, View layout) {
 		((InjectorProvider)context).getInjector().injectMembers(this); //work around RoboGuice bug: https://code.google.com/p/roboguice/issues/detail?id=93
