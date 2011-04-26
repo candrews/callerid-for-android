@@ -7,7 +7,6 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
@@ -24,12 +23,11 @@ public class HttpCallerIDLookup implements CallerIDLookup {
 	@InjectResource(R.string.default_lookup_url) String defaultLookupUrl;
 
 	public CallerIDResult lookup(CharSequence phoneNumber) throws NoResultException {
-		HttpClient client = new DefaultHttpClient();
 		final String url = MessageFormat.format(sharedPreferences.getString("lookup_url", defaultLookupUrl), phoneNumber);
 		
 		try{
 			final HttpGet get = new HttpGet(url);
-			final HttpResponse response = client.execute(get);
+			final HttpResponse response = httpClient.execute(get);
 			final StatusLine statusLine = response.getStatusLine();
 			if (statusLine.getStatusCode() >= 300) {
 				if(statusLine.getStatusCode() == 404)
