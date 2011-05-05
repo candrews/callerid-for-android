@@ -1,5 +1,6 @@
 package com.integralblue.callerid;
 
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import roboguice.inject.InjectorProvider;
@@ -80,8 +81,15 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 			// we want to cancel any lookups in progress
 			if (geocoderAsyncTask != null)
 				geocoderAsyncTask.cancel(true);
-			geocoderAsyncTask = new GeocoderAsyncTask(result.getAddress(),layout);
-			geocoderAsyncTask.execute();
+			if(result.getLatitude()!=null && result.getLongitude()!=null){
+				final MapView mapView = (MapView) layout.findViewById(R.id.map_view);
+		        mapView.getController().setZoom(16);
+				mapView.getController().setCenter(new GeoPoint(result.getLatitude(),result.getLongitude()));
+				mapView.setVisibility(View.VISIBLE);
+			}else{
+				geocoderAsyncTask = new GeocoderAsyncTask(result.getAddress(),layout);
+				geocoderAsyncTask.execute();
+			}
 		}
 		image.setImageDrawable(null);
 		text.setText(result.getName());

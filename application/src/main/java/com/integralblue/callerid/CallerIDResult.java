@@ -22,10 +22,29 @@ public class CallerIDResult implements Serializable {
 		return address;
 	}
 	
+	final Double latitude;
+	public Double getLatitude(){
+		return latitude;
+	}
+
+	final Double longitude;
+	public Double getLongitude(){
+		return longitude;
+	}
+	
 	
 	public CallerIDResult(String phoneNumber, String name, String address){
 		this.phoneNumber=phoneNumber;
 		this.name=name;
 		this.address=address;
+		this.latitude=null;
+		this.longitude=null;
+	}
+	public CallerIDResult(String phoneNumber, String name, String address,Double latitude, Double longitude){
+		this.phoneNumber=phoneNumber;
+		this.name=name;
+		this.address=address;
+		this.latitude=latitude;
+		this.longitude=longitude;
 	}
 }

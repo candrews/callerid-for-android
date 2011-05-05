@@ -36,7 +36,7 @@ public class HttpCallerIDLookup implements CallerIDLookup {
 	                    statusLine.getReasonPhrase());
 	        }
 			final JSONObject jsonObject = new JSONObject(EntityUtils.toString(response.getEntity()));
-			return new CallerIDResult(jsonObject.getString("phoneNumber"), jsonObject.getString("name"), jsonObject.has("address")?jsonObject.getString("address"):null);
+			return new CallerIDResult(jsonObject.getString("phoneNumber"), jsonObject.getString("name"), jsonObject.has("address")?jsonObject.getString("address"):null, jsonObject.has("latitude")?jsonObject.getDouble("latitude"):null, jsonObject.has("longitude")?jsonObject.getDouble("longitude"):null);
 		}catch(Exception e){
 			if(e instanceof NoResultException)
 				throw (NoResultException)e;
