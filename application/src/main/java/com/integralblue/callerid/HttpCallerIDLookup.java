@@ -1,19 +1,15 @@
 package com.integralblue.callerid;
 
 import java.text.MessageFormat;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
-
+import org.codehaus.jackson.map.DeserializationConfig.Feature;
+import org.codehaus.jackson.map.ObjectMapper;
 import roboguice.inject.InjectResource;
-
 import android.content.SharedPreferences;
-
 import com.google.inject.Inject;
 
 public class HttpCallerIDLookup implements CallerIDLookup {
@@ -35,8 +31,9 @@ public class HttpCallerIDLookup implements CallerIDLookup {
 	            throw new HttpResponseException(statusLine.getStatusCode(),
 	                    statusLine.getReasonPhrase());
 	        }
-			final JSONObject jsonObject = new JSONObject(EntityUtils.toString(response.getEntity()));
-			return new CallerIDResult(jsonObject.getString("phoneNumber"), jsonObject.getString("name"), jsonObject.has("address")?jsonObject.getString("address"):null, jsonObject.has("latitude")?jsonObject.getDouble("latitude"):null, jsonObject.has("longitude")?jsonObject.getDouble("longitude"):null);
+			final ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.getDeserializationConfig().set(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			return objectMapper.readValue(response.getEntity().getContent(), CallerIDResult.class);
 		}catch(Exception e){
 			if(e instanceof NoResultException)
 				throw (NoResultException)e;

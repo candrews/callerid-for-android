@@ -3,48 +3,56 @@ package com.integralblue.callerid;
 import java.io.Serializable;
 
 public class CallerIDResult implements Serializable {
-	private static final long serialVersionUID = 8782505400376543794L;
-	
-	final String phoneNumber;
+	private static final long serialVersionUID = 3737128577227643432L;
+
+	String phoneNumber;
+
 	public String getPhoneNumber() {
 		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	final String name;
-	
-	final String address;
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public String getAddress() {
 		return address;
 	}
-	
-	final Double latitude;
-	public Double getLatitude(){
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public Double getLatitude() {
 		return latitude;
 	}
 
-	final Double longitude;
-	public Double getLongitude(){
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+	public Double getLongitude() {
 		return longitude;
 	}
-	
-	
-	public CallerIDResult(String phoneNumber, String name, String address){
-		this.phoneNumber=phoneNumber;
-		this.name=name;
-		this.address=address;
-		this.latitude=null;
-		this.longitude=null;
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
 	}
-	public CallerIDResult(String phoneNumber, String name, String address,Double latitude, Double longitude){
-		this.phoneNumber=phoneNumber;
-		this.name=name;
-		this.address=address;
-		this.latitude=latitude;
-		this.longitude=longitude;
+
+	String name;
+	String address;
+	Double latitude;
+	Double longitude;
+
+	public CallerIDResult() {
+		super();
 	}
 }

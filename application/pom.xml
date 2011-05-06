@@ -31,6 +31,12 @@
 			<artifactId>guice</artifactId>
 			<version>2.0-no_aop</version>
 		</dependency>
+        <dependency>
+            <!-- Using Jackson for JSON marshaling -->
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.8.0</version>
+        </dependency>
 		<!-- begin map dependencies -->
 		<!-- required by org.osmdroid.osmdroid -->
 		<dependency>
