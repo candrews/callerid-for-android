@@ -14,6 +14,7 @@ import android.os.IBinder;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import com.google.inject.Inject;
 import com.integralblue.callerid.contacts.ContactsHelper;
@@ -32,7 +33,7 @@ public class CallerIDService extends RoboService {
 	LayoutInflater layoutInflater;
 
 	//@InjectView(R.layout.toast)
-	View toastLayout;
+	ViewGroup toastLayout;
 	
 	@Inject
 	CallerIDLookup callerIDLookup;
@@ -141,7 +142,7 @@ public class CallerIDService extends RoboService {
 	public void onCreate() {
 		super.onCreate();
 		
-		toastLayout = layoutInflater.inflate(R.layout.toast, null);
+		toastLayout = (ViewGroup) layoutInflater.inflate(R.layout.toast, null);
 		
 		defaultPopupHorizontalGravity = getResources().getInteger(R.integer.default_popup_horizontal_gravity);
 		defaultPopupVerticalGravity = getResources().getInteger(R.integer.default_popup_vertical_gravity);

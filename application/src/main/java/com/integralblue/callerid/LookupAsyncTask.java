@@ -6,7 +6,9 @@ import org.osmdroid.views.MapView;
 import roboguice.inject.InjectorProvider;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.blundell.tut.LoaderImageView;
@@ -20,29 +22,30 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 
 	final CharSequence phoneNumber;
 	
-	final View layout;
+	final ViewGroup layout;
 	final TextView text;
 	final TextView address;
 	final LoaderImageView image;
-	final MapView mapView;
 	
 	final String lookupNoResult;
 	final String lookupError;
 	final String lookupInProgress;
+	
+	@Inject
+	LayoutInflater layoutInflater;
 	
 	protected GeocoderAsyncTask geocoderAsyncTask = null;
 	
 	@Inject
 	CallerIDLookup callerIDLookup;
 
-	public LookupAsyncTask(CharSequence phoneNumber, View layout) {
+	public LookupAsyncTask(CharSequence phoneNumber, ViewGroup layout) {
 		((InjectorProvider)context).getInjector().injectMembers(this); //work around RoboGuice bug: https://code.google.com/p/roboguice/issues/detail?id=93
 		this.layout = layout;
 		this.phoneNumber = phoneNumber;
 		text = (TextView) layout.findViewById(R.id.text);
 		address = (TextView) layout.findViewById(R.id.address);
 		image = (LoaderImageView) layout.findViewById(R.id.image);
-		mapView = (MapView) layout.findViewById(R.id.map_view);
 		
 		lookupNoResult = context.getString(R.string.lookup_no_result);
 		lookupError = context.getString(R.string.lookup_error);
@@ -57,7 +60,7 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	protected void onPreExecute() throws Exception {
 		super.onPreExecute();
 		address.setVisibility(View.GONE);
-		mapView.setVisibility(View.GONE);
+		if(layout.findViewById(R.id.map_view)!=null) layout.findViewById(R.id.map_view).setVisibility(View.GONE);
 		image.setVisibility(View.VISIBLE);
 		text.setVisibility(View.VISIBLE);
 		text.setText(lookupInProgress);
@@ -81,8 +84,13 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 			// we want to cancel any lookups in progress
 			if (geocoderAsyncTask != null)
 				geocoderAsyncTask.cancel(true);
+			MapView mapView = (MapView) layout.findViewById(R.id.map_view);
 			if(result.getLatitude()!=null && result.getLongitude()!=null){
-				final MapView mapView = (MapView) layout.findViewById(R.id.map_view);
+				if(mapView == null){
+					LayoutInflater.from(context).inflate(R.layout.map, layout, true);
+					mapView = (MapView) layout.findViewById(R.id.map_view);
+					mapView.setBuiltInZoomControls(true);
+				}
 		        mapView.getController().setZoom(16);
 				mapView.getController().setCenter(new GeoPoint(result.getLatitude(),result.getLongitude()));
 				mapView.setVisibility(View.VISIBLE);
@@ -104,7 +112,7 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 			text.setText(lookupError);
 		}
 		address.setVisibility(View.GONE);
-		mapView.setVisibility(View.GONE);
+		if(layout.findViewById(R.id.map_view)!=null) layout.findViewById(R.id.map_view).setVisibility(View.GONE);
 		image.setImageDrawable(null);
 	}
 
@@ -112,7 +120,7 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	protected void onInterrupted(Exception e) {
 		super.onInterrupted(e);
 		address.setVisibility(View.GONE);
-		mapView.setVisibility(View.GONE);
+		if(layout.findViewById(R.id.map_view)!=null) layout.findViewById(R.id.map_view).setVisibility(View.GONE);
 		image.setVisibility(View.GONE);
 		text.setVisibility(View.GONE);
 	}

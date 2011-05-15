@@ -9,7 +9,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.codehaus.jackson.map.DeserializationConfig.Feature;
 import org.codehaus.jackson.map.ObjectMapper;
 import roboguice.inject.InjectResource;
-import roboguice.util.Ln;
 import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;

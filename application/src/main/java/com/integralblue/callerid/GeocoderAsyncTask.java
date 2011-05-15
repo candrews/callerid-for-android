@@ -12,21 +12,22 @@ import roboguice.inject.InjectorProvider;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
 import android.location.Address;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 public class GeocoderAsyncTask extends RoboAsyncTask<Address> {
 
 	final String locationName;
-	final MapView mapView;
+	final ViewGroup layout;
 	
 	@Inject
 	Geocoder geocoder;
 
-	public GeocoderAsyncTask(String locationName, View layout) {
+	public GeocoderAsyncTask(final String locationName, final ViewGroup layout) {
 		((InjectorProvider)context).getInjector().injectMembers(this); //work around RoboGuice bug: https://code.google.com/p/roboguice/issues/detail?id=93
 		this.locationName = locationName;
-		mapView = (MapView) layout.findViewById(R.id.map_view);
-		mapView.setBuiltInZoomControls(true);
+		this.layout = layout;
 	}
 
 	public Address call() throws Exception {
@@ -39,11 +40,17 @@ public class GeocoderAsyncTask extends RoboAsyncTask<Address> {
 	}
 
 	@Override
-	protected void onSuccess(Address address)
+	protected void onSuccess(final Address address)
 			throws Exception {
+		MapView mapView = (MapView) layout.findViewById(R.id.map_view);
 		if(address == null){
-			mapView.setVisibility(View.GONE);
+			if(mapView!=null) mapView.setVisibility(View.GONE);
 		}else{
+			if(mapView == null){
+				LayoutInflater.from(context).inflate(R.layout.map, layout, true);
+				mapView = (MapView) layout.findViewById(R.id.map_view);
+				mapView.setBuiltInZoomControls(true);
+			}
 	        mapView.getController().setZoom(16);
 			mapView.getController().setCenter(new GeoPoint(address.getLatitude(),address.getLongitude()));
 			mapView.setVisibility(View.VISIBLE);
@@ -51,14 +58,14 @@ public class GeocoderAsyncTask extends RoboAsyncTask<Address> {
 	}
 
 	@Override
-	protected void onException(Exception e) throws RuntimeException {
+	protected void onException(final Exception e) throws RuntimeException {
 		Ln.e(e);
-		mapView.setVisibility(View.GONE);
+		if(layout.findViewById(R.id.map_view)!=null) layout.findViewById(R.id.map_view).setVisibility(View.GONE);
 	}
 
 	@Override
-	protected void onInterrupted(Exception e) {
+	protected void onInterrupted(final Exception e) {
 		super.onInterrupted(e);
-		mapView.setVisibility(View.GONE);
+		if(layout.findViewById(R.id.map_view)!=null) layout.findViewById(R.id.map_view).setVisibility(View.GONE);
 	}
 }

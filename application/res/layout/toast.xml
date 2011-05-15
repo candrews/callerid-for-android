@@ -23,12 +23,8 @@
 		android:layout_height="wrap_content"
 		android:textColor="#FFF"
 	/>
-    <org.osmdroid.views.MapView
-    	android:visibility="gone"
-    	android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:layout_weight="1"
-		android:minHeight="100dp"
-		android:id="@+id/map_view"
-		 />
+	<!-- 
+	map.xml is dynamically included here.
+	OpenStreetMap's MapView is a bit heavy to load, so we load it only when necessary to speed things up a bit
+  -->
 </LinearLayout>

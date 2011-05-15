@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import com.google.inject.Inject;
@@ -33,7 +34,7 @@ public class MainActivity extends RoboActivity {
 	
 	class MainLookupAsyncTask extends LookupAsyncTask {
 		public MainLookupAsyncTask(CharSequence phoneNumber) {
-			super(phoneNumber,findViewById(R.id.main_layout_root));
+			super(phoneNumber,(ViewGroup) findViewById(R.id.toast_layout_root));
 		}
 		@Override
 		protected void onSuccess(CallerIDResult result)
