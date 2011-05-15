@@ -32,7 +32,6 @@ public class HttpCallerIDLookup implements CallerIDLookup {
 		final String agentCountry = TextUtils.isEmpty(telephonyManager.getNetworkCountryIso())?telephonyManager.getNetworkCountryIso():telephonyManager.getSimCountryIso();
 		
 		final String url = MessageFormat.format(sharedPreferences.getString("lookup_url", defaultLookupUrl), phoneNumber, agentCountry);
-		Ln.e(url);
 		
 		try{
 			final HttpGet get = new HttpGet(url);
