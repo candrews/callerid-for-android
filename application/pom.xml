@@ -63,8 +63,8 @@
 		</dependency>
 		<!-- not in Maven
 		installed using:
-		wget http://osmdroid.googlecode.com/files/osmdroid-android-3.0.3.jar
-		mvn install:install-file -DgroupId=org.osmdroid -DartifactId=osmdroid -Dversion=3.0.3 -Dpackaging=jar -Dfile=osmdroid-android-3.0.3.jar
+		wget http://osmdroid.googlecode.com/files/osmdroid-android-3.0.4.jar
+		mvn install:install-file -DgroupId=org.osmdroid -DartifactId=osmdroid -Dversion=3.0.4 -Dpackaging=jar -Dfile=osmdroid-android-3.0.4.jar
 		 -->
 		<dependency>
 			<groupId>org.osmdroid</groupId>
