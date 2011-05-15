@@ -8,7 +8,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import roboguice.application.RoboApplication;
 import roboguice.config.AbstractAndroidModule;
 import roboguice.inject.SharedPreferencesName;
+import roboguice.inject.SystemServiceProvider;
+import android.content.Context;
 import android.os.Build;
+import android.telephony.TelephonyManager;
 
 import com.google.inject.Module;
 import com.google.inject.Scopes;
@@ -24,6 +27,10 @@ public class CallerIDApplication extends RoboApplication {
     	modules.add(new AbstractAndroidModule() {
 			@Override
 			protected void configure() {
+				
+				//https://code.google.com/p/roboguice/issues/detail?id=77 fixed in as yet unreleased Roboguice 1.2
+				bind(TelephonyManager.class).toProvider( new SystemServiceProvider<TelephonyManager>(Context.TELEPHONY_SERVICE));
+				
 				bindConstant().annotatedWith(SharedPreferencesName.class).to(this.getClass().getPackage().getName() + "_preferences"); 
 				bind(ContactsHelper.class).toProvider(ContactsHelperProvider.class).in(Scopes.SINGLETON);
 				bind(CallerIDLookup.class).to(HttpCallerIDLookup.class).in(Scopes.SINGLETON);

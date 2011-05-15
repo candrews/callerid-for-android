@@ -9,7 +9,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.codehaus.jackson.map.DeserializationConfig.Feature;
 import org.codehaus.jackson.map.ObjectMapper;
 import roboguice.inject.InjectResource;
+import roboguice.util.Ln;
 import android.content.SharedPreferences;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+
 import com.google.inject.Inject;
 
 public class HttpCallerIDLookup implements CallerIDLookup {
@@ -17,9 +21,18 @@ public class HttpCallerIDLookup implements CallerIDLookup {
 	@Inject HttpClient httpClient;
 	@Inject SharedPreferences sharedPreferences;
 	@InjectResource(R.string.default_lookup_url) String defaultLookupUrl;
+	
+	@Inject TelephonyManager telephonyManager;
 
 	public CallerIDResult lookup(CharSequence phoneNumber) throws NoResultException {
-		final String url = MessageFormat.format(sharedPreferences.getString("lookup_url", defaultLookupUrl), phoneNumber);
+		//use the network's country if it's available (as I figure that's probably the best? I'm just guessing)
+		//if the network's country isn't available, using the SIM's
+		//I have no idea how or if this works on CDMA networks
+		//(Android documentation warns that these function may not work as expected with CDMA)
+		final String agentCountry = TextUtils.isEmpty(telephonyManager.getNetworkCountryIso())?telephonyManager.getNetworkCountryIso():telephonyManager.getSimCountryIso();
+		
+		final String url = MessageFormat.format(sharedPreferences.getString("lookup_url", defaultLookupUrl), phoneNumber, agentCountry);
+		Ln.e(url);
 		
 		try{
 			final HttpGet get = new HttpGet(url);
