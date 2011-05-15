@@ -11,4 +11,9 @@
     <string name="create_contact">Add Contact</string>
     
     <string name="default_lookup_url"><![CDATA[http://callerid.integralblue.com/callerid.php?format=json&num={0}&country={1}]]></string>
+    
+    <string name="missed_call_from_known">Missed call from {0}</string>
+    <string name="missed_call_from_unknown">Missed call</string>
+    
+    <string name="missed_call">Missed call</string>
 </resources>

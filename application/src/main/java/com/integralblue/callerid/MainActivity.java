@@ -6,6 +6,7 @@ import roboguice.util.Ln;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -90,6 +91,13 @@ public class MainActivity extends RoboActivity {
             	createContactClick(v);
             }
         });
+        
+        //if a phone number was passed in, look it up
+        final String initialPhoneNumber = this.getIntent().getStringExtra("phoneNumber");
+        if(! TextUtils.isEmpty(initialPhoneNumber)){
+        	phoneNumber.setText(initialPhoneNumber);
+        	performLookup.performClick();
+        }
     }
     
     @Override

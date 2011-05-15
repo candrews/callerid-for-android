@@ -1,6 +1,12 @@
 package com.integralblue.callerid;
 
+import java.text.MessageFormat;
+import java.util.Random;
+
 import roboguice.service.RoboService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
@@ -20,6 +26,9 @@ public class CallerIDService extends RoboService {
 	WindowManager windowManager;
 	
 	@Inject
+	NotificationManager notificationManager;
+	
+	@Inject
 	LayoutInflater layoutInflater;
 
 	//@InjectView(R.layout.toast)
@@ -37,6 +46,10 @@ public class CallerIDService extends RoboService {
 	//@InjectResource(R.integer.default_popup_vertical_gravity)
 	int defaultPopupVerticalGravity;
 	
+	String previousPhoneState = TelephonyManager.EXTRA_STATE_IDLE;
+	String previousPhoneNumber = null;
+	String previousCallerID = null;
+	
 	class ToastLookupAsyncTask extends LookupAsyncTask {
 		public ToastLookupAsyncTask(CharSequence phoneNumber) {
 			super(phoneNumber,toastLayout);
@@ -46,21 +59,25 @@ public class CallerIDService extends RoboService {
 				throws Exception {
 			super.onSuccess(result);
 			toastLayout.setVisibility(View.VISIBLE);
+			previousCallerID = result.getName();
 		}
 		@Override
 		protected void onPreExecute() throws Exception {
 			super.onPreExecute();
-			toastLayout.setVisibility(View.GONE);
+			toastLayout.setVisibility(View.VISIBLE);
+			previousCallerID = null;
 		}
 		@Override
 		protected void onException(Exception e) throws RuntimeException {
 			super.onException(e);
 			toastLayout.setVisibility(View.VISIBLE);
+			previousCallerID = null;
 		}
 		@Override
 		protected void onInterrupted(Exception e) {
 			super.onInterrupted(e);
 			toastLayout.setVisibility(View.GONE);
+			previousCallerID = null;
 		}
 	}
 
@@ -81,7 +98,7 @@ public class CallerIDService extends RoboService {
 	}
 	
 	protected void handleCommand(Intent intent, int startId){
-		final String phone_state = intent
+		final String phoneState = intent
 				.getStringExtra(TelephonyManager.EXTRA_STATE);
 		final String phoneNumber = intent
 				.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
@@ -91,7 +108,7 @@ public class CallerIDService extends RoboService {
 		if (currentLookupAsyncTask != null)
 			currentLookupAsyncTask.cancel(true);
 
-		if (phone_state.equals(TelephonyManager.EXTRA_STATE_RINGING)
+		if (TelephonyManager.EXTRA_STATE_RINGING.equals(phoneState)
 				&& !contactsHelper.haveContactWithPhoneNumber(phoneNumber)) {
 			currentLookupAsyncTask = new ToastLookupAsyncTask(phoneNumber);
 			currentLookupAsyncTask.execute();
@@ -99,6 +116,25 @@ public class CallerIDService extends RoboService {
 			toastLayout.setVisibility(View.GONE);
 			stopSelf(startId);
 		}
+		
+		if (TelephonyManager.EXTRA_STATE_IDLE.equals(phoneState)
+				&& TelephonyManager.EXTRA_STATE_RINGING.equals(previousPhoneState)
+				&& previousPhoneNumber!=null
+				&& !contactsHelper.haveContactWithPhoneNumber(previousPhoneNumber)){
+			//add missed call notification
+			final Notification notification = new Notification(
+					android.R.drawable.sym_call_missed,
+					previousCallerID==null?getString(R.string.missed_call_from_unknown):MessageFormat.format(getString(R.string.missed_call_from_known),previousCallerID),
+					System.currentTimeMillis());
+			final Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+			notificationIntent.putExtra("phoneNumber", previousPhoneNumber);
+			final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+			notification.setLatestEventInfo(getApplicationContext(), getString(R.string.missed_call), previousCallerID==null?getString(R.string.perform_lookup_label):previousCallerID, contentIntent);
+			notification.flags |= Notification.FLAG_AUTO_CANCEL;
+			notificationManager.notify(new Random().nextInt(), notification);
+		}
+		previousPhoneNumber = phoneNumber;
+		previousPhoneState = phoneState;
 	}
 
 	@Override
