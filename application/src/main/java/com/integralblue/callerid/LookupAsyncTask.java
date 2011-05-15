@@ -57,7 +57,7 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	protected void onPreExecute() throws Exception {
 		super.onPreExecute();
 		address.setVisibility(View.GONE);
-		//mapView.setVisibility(View.GONE);
+		mapView.setVisibility(View.GONE);
 		image.setVisibility(View.VISIBLE);
 		text.setVisibility(View.VISIBLE);
 		text.setText(lookupInProgress);
