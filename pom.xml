@@ -5,7 +5,7 @@
 
   <groupId>com.integralblue</groupId>
   <artifactId>callerid-parent</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>callerid - Parent</name>
   

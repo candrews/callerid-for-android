@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.integralblue.callerid" android:versionCode="1"
-	android:installLocation="internalOnly" android:versionName="1.0">
+	package="com.integralblue.callerid" android:versionCode="2"
+	android:installLocation="internalOnly" android:versionName="1.1">
 	<!-- android:installLocation="internalOnly" because this application revolves 
 		around a service which would not work (and would not be restarted) if the 
 		application was to be installed on external storage and the storage unmounted -->
