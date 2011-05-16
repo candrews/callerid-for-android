@@ -2,9 +2,12 @@ package com.integralblue.callerid;
 
 import java.io.Serializable;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 public class CallerIDResult implements Serializable {
 	private static final long serialVersionUID = 3737128577227643432L;
 
+	@JsonProperty("phoneNumber")
 	String phoneNumber;
 
 	public String getPhoneNumber() {
@@ -47,9 +50,13 @@ public class CallerIDResult implements Serializable {
 		this.longitude = longitude;
 	}
 
+	@JsonProperty("name")
 	String name;
+	@JsonProperty("address")
 	String address;
+	@JsonProperty("latitude")
 	Double latitude;
+	@JsonProperty("longitude")
 	Double longitude;
 
 	public CallerIDResult() {
