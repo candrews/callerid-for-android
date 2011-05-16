@@ -37,6 +37,15 @@
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.8.0</version>
         </dependency>
+        <dependency>
+        	<!-- Jackson can use joda time,
+        	so even though we don't use it,
+        	in order for proguard to do it's thing,
+        	we have to include the dependency -->
+		    <groupId>joda-time</groupId>
+		    <artifactId>joda-time</artifactId>
+		    <version>1.6.2</version>
+		</dependency>
 		<!-- begin map dependencies -->
 		<!-- required by org.osmdroid.osmdroid -->
 		<dependency>
