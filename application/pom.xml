@@ -34,7 +34,7 @@
             <!-- Using Jackson for JSON marshaling -->
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.8.0</version>
+            <version>1.8.3</version>
         </dependency>
         <dependency>
         	<!-- Jackson can use joda time,
