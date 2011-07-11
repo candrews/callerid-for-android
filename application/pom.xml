@@ -6,12 +6,11 @@
 	<parent>
 		<groupId>com.integralblue</groupId>
 		<artifactId>callerid-parent</artifactId>
-		<version>1.1-SNAPSHOT</version>
+		<version>1.2-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.integralblue</groupId>
 	<artifactId>callerid</artifactId>
-	<version>1.1-SNAPSHOT</version>
 	<packaging>apk</packaging>
 	<name>callerid - Application</name>
 
@@ -86,9 +85,24 @@
 	<build>
 		<plugins>
 			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>resources</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 				<artifactId>maven-android-plugin</artifactId>
 				<extensions>true</extensions>
+				<configuration>
+					<androidManifestFile>${project.build.directory}/filtered-manifest/AndroidManifest.xml</androidManifestFile>
+					<resourceDirectory>${project.build.directory}/filtered-res</resourceDirectory>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

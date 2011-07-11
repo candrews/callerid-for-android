@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+Eclipse (specifically m2eclipse-android-integration) doesn't work with filtered manifest files right now
+https://code.google.com/a/eclipselabs.org/p/m2eclipse-android-integration/issues/detail?id=60
+Ideally, these attributes on <manifest> would be:
+android:versionCode="${versionCode}"
+android:versionName="${project.version}"
+On <application> the attributes would be:
+android:debuggable="${android.debuggable}"
+  -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.integralblue.callerid" android:versionCode="2"
-	android:installLocation="internalOnly" android:versionName="1.1">
+	package="com.integralblue.callerid" android:versionCode="3"
+	android:installLocation="internalOnly" android:versionName="1.2">
 	<!-- android:installLocation="internalOnly" because this application revolves 
 		around a service which would not work (and would not be restarted) if the 
 		application was to be installed on external storage and the storage unmounted -->
