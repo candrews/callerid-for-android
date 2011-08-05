@@ -6,6 +6,7 @@ import org.osmdroid.views.MapView;
 import roboguice.inject.InjectorProvider;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,13 +41,14 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	CallerIDLookup callerIDLookup;
 
 	public LookupAsyncTask(CharSequence phoneNumber, ViewGroup layout) {
-		((InjectorProvider)context).getInjector().injectMembers(this); //work around RoboGuice bug: https://code.google.com/p/roboguice/issues/detail?id=93
+		((InjectorProvider)contextProvider.get()).getInjector().injectMembers(this); //work around RoboGuice bug: https://code.google.com/p/roboguice/issues/detail?id=93
 		this.layout = layout;
 		this.phoneNumber = phoneNumber;
 		text = (TextView) layout.findViewById(R.id.text);
 		address = (TextView) layout.findViewById(R.id.address);
 		image = (LoaderImageView) layout.findViewById(R.id.image);
 		
+		final Context context = contextProvider.get();
 		lookupNoResult = context.getString(R.string.lookup_no_result);
 		lookupError = context.getString(R.string.lookup_error);
 		lookupInProgress = context.getString(R.string.lookup_in_progress);
@@ -87,7 +89,7 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 			MapView mapView = (MapView) layout.findViewById(R.id.map_view);
 			if(result.getLatitude()!=null && result.getLongitude()!=null){
 				if(mapView == null){
-					LayoutInflater.from(context).inflate(R.layout.map, layout, true);
+					LayoutInflater.from(contextProvider.get()).inflate(R.layout.map, layout, true);
 					mapView = (MapView) layout.findViewById(R.id.map_view);
 					mapView.setBuiltInZoomControls(true);
 				}
