@@ -32,6 +32,8 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	final String lookupError;
 	final String lookupInProgress;
 	
+	final boolean showMap;
+	
 	@Inject
 	LayoutInflater layoutInflater;
 	
@@ -40,10 +42,11 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	@Inject
 	CallerIDLookup callerIDLookup;
 
-	public LookupAsyncTask(CharSequence phoneNumber, ViewGroup layout) {
+	public LookupAsyncTask(CharSequence phoneNumber, ViewGroup layout, boolean showMap) {
 		((InjectorProvider)contextProvider.get()).getInjector().injectMembers(this); //work around RoboGuice bug: https://code.google.com/p/roboguice/issues/detail?id=93
 		this.layout = layout;
 		this.phoneNumber = phoneNumber;
+		this.showMap = showMap;
 		text = (TextView) layout.findViewById(R.id.text);
 		address = (TextView) layout.findViewById(R.id.address);
 		image = (LoaderImageView) layout.findViewById(R.id.image);
@@ -87,18 +90,20 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 			if (geocoderAsyncTask != null)
 				geocoderAsyncTask.cancel(true);
 			MapView mapView = (MapView) layout.findViewById(R.id.map_view);
-			if(result.getLatitude()!=null && result.getLongitude()!=null){
-				if(mapView == null){
-					LayoutInflater.from(contextProvider.get()).inflate(R.layout.map, layout, true);
-					mapView = (MapView) layout.findViewById(R.id.map_view);
-					mapView.setBuiltInZoomControls(true);
+			if(showMap){
+				if(result.getLatitude()!=null && result.getLongitude()!=null){
+					if(mapView == null){
+						LayoutInflater.from(contextProvider.get()).inflate(R.layout.map, layout, true);
+						mapView = (MapView) layout.findViewById(R.id.map_view);
+						mapView.setBuiltInZoomControls(true);
+					}
+			        mapView.getController().setZoom(16);
+					mapView.getController().setCenter(new GeoPoint(result.getLatitude(),result.getLongitude()));
+					mapView.setVisibility(View.VISIBLE);
+				}else{
+					geocoderAsyncTask = new GeocoderAsyncTask(result.getAddress(),layout);
+					geocoderAsyncTask.execute();
 				}
-		        mapView.getController().setZoom(16);
-				mapView.getController().setCenter(new GeoPoint(result.getLatitude(),result.getLongitude()));
-				mapView.setVisibility(View.VISIBLE);
-			}else{
-				geocoderAsyncTask = new GeocoderAsyncTask(result.getAddress(),layout);
-				geocoderAsyncTask.execute();
 			}
 		}
 		image.setImageDrawable(null);

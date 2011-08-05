@@ -34,7 +34,7 @@ public class MainActivity extends RoboActivity {
 	
 	class MainLookupAsyncTask extends LookupAsyncTask {
 		public MainLookupAsyncTask(CharSequence phoneNumber) {
-			super(phoneNumber,(ViewGroup) findViewById(R.id.toast_layout_root));
+			super(phoneNumber,(ViewGroup) findViewById(R.id.toast_layout_root),true);
 		}
 		@Override
 		protected void onSuccess(CallerIDResult result)

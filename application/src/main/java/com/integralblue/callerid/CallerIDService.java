@@ -47,13 +47,15 @@ public class CallerIDService extends RoboService {
 	//@InjectResource(R.integer.default_popup_vertical_gravity)
 	int defaultPopupVerticalGravity;
 	
+	boolean defaultPopupMap;
+	
 	String previousPhoneState = TelephonyManager.EXTRA_STATE_IDLE;
 	String previousPhoneNumber = null;
 	String previousCallerID = null;
 	
 	class ToastLookupAsyncTask extends LookupAsyncTask {
 		public ToastLookupAsyncTask(CharSequence phoneNumber) {
-			super(phoneNumber,toastLayout);
+			super(phoneNumber,toastLayout,sharedPreferences.getBoolean("popup_map", defaultPopupMap));
 		}
 		@Override
 		protected void onSuccess(CallerIDResult result)
@@ -146,6 +148,7 @@ public class CallerIDService extends RoboService {
 		
 		defaultPopupHorizontalGravity = getResources().getInteger(R.integer.default_popup_horizontal_gravity);
 		defaultPopupVerticalGravity = getResources().getInteger(R.integer.default_popup_vertical_gravity);
+		defaultPopupMap = Boolean.parseBoolean(getResources().getString(R.string.default_popup_map));
 		
 		WindowManager.LayoutParams params = new WindowManager.LayoutParams(
 				WindowManager.LayoutParams.WRAP_CONTENT,

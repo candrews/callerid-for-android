@@ -16,4 +16,6 @@
     <string name="missed_call_from_unknown">Missed call</string>
     
     <string name="missed_call">Missed call</string>
+    
+    <string name="default_popup_map">true</string>
 </resources>

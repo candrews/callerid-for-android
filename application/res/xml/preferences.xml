@@ -16,6 +16,11 @@
                         android:defaultValue="@integer/default_popup_horizontal_gravity"
                         android:entries="@array/horizontal_gravities"
                         android:entryValues="@array/horizontal_gravity_values" />
+                <CheckBoxPreference
+                		android:title="Show map in popup"
+                		android:summary="Display mini-map of caller's address"
+                		android:key="popup_map"
+                		android:defaultValue="@string/default_popup_map" />
         </PreferenceCategory>
 		<PreferenceCategory
                 android:title="Lookup source">
