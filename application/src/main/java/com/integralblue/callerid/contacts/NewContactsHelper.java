@@ -13,7 +13,6 @@ import com.google.inject.Provider;
 import com.integralblue.callerid.CallerIDResult;
 
 public class NewContactsHelper implements ContactsHelper {
-	@Inject	ContentResolver contentResolver;
 	@Inject Context context;
 	@Inject
 	Provider<Activity> activityProvider;
@@ -21,6 +20,7 @@ public class NewContactsHelper implements ContactsHelper {
 
 	public boolean haveContactWithPhoneNumber(String phoneNumber) {
 		final Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+		final ContentResolver contentResolver = context.getContentResolver();
 		final Cursor cursor = contentResolver.query(uri,projection,null,null,null);
 		try{
 			return cursor.moveToNext();
