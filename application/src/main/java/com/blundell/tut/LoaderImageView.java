@@ -1,7 +1,18 @@
 package com.blundell.tut;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+
+import roboguice.inject.InjectorProvider;
+import roboguice.util.Ln;
+
+import com.google.inject.Inject;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -29,10 +40,15 @@ public class LoaderImageView extends LinearLayout{
 	private Drawable mDrawable;
 	private ProgressBar mSpinner;
 	private ImageView mImage;
+	private Integer errorResource;
+	
+	@Inject
+	private HttpClient httpClient;
 	
 	/**
 	 * This is used when creating the view in XML
 	 * To have an image load in XML use the tag 'image="http://developer.android.com/images/dialog_buttons.png"'
+	 * To specify the image to display in case of failure, use 'error="R.drawable.something"'
 	 * Replacing the url with your desired image
 	 * Once you have instantiated the XML view you can call
 	 * setImageDrawable(url) to change the image
@@ -41,7 +57,10 @@ public class LoaderImageView extends LinearLayout{
 	 */
 	public LoaderImageView(final Context context, final AttributeSet attrSet) {
 		super(context, attrSet);
+		((InjectorProvider)context).getInjector().injectMembers(this);
 		final String url = attrSet.getAttributeValue(null, "image");
+		errorResource = attrSet.getAttributeResourceValue(null, "error", 0);
+		if(errorResource == 0) errorResource = null;
 		if(url != null){
 			instantiate(context, url);
 		} else {
@@ -70,10 +89,11 @@ public class LoaderImageView extends LinearLayout{
 		mContext = context;
 		
 		mImage = new ImageView(mContext);
-		mImage.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		
+		mImage.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		
 		mSpinner = new ProgressBar(mContext);
-		mSpinner.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		mSpinner.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 			
 		mSpinner.setIndeterminate(true);
 		
@@ -106,8 +126,12 @@ public class LoaderImageView extends LinearLayout{
 		new Thread(){
 			public void run() {
 				try {
-					mDrawable = getDrawableFromUrl(imageUrl);
-					imageLoadedHandler.sendEmptyMessage(COMPLETE);
+					if(imageUrl==null){
+						imageLoadedHandler.sendEmptyMessage(FAILED);
+					}else{
+						mDrawable = getDrawableFromUrl(imageUrl);
+						imageLoadedHandler.sendEmptyMessage(COMPLETE);
+					}
 				} catch (MalformedURLException e) {
 					imageLoadedHandler.sendEmptyMessage(FAILED);
 				} catch (IOException e) {
@@ -122,11 +146,16 @@ public class LoaderImageView extends LinearLayout{
 		imageLoadedHandler.sendEmptyMessage(COMPLETE);
 	}
 	
+	public void setErrorResource(int resId){
+		this.errorResource = resId;
+	}
+	
 	/**
 	 * Callback that is received once the image has been downloaded
 	 */
 	private final Handler imageLoadedHandler = new Handler(new Callback() {
 		public boolean handleMessage(Message msg) {
+			Ln.v("Message is: %s", msg.what);
 			switch (msg.what) {
 			case COMPLETE:
 				mImage.setImageDrawable(mDrawable);
@@ -134,7 +163,12 @@ public class LoaderImageView extends LinearLayout{
 				mSpinner.setVisibility(View.GONE);
 				break;
 			case FAILED:
-				mImage.setVisibility(View.GONE);
+				if(errorResource == null){
+					mImage.setVisibility(View.GONE);
+				}else{
+					mImage.setImageResource(errorResource);
+					mImage.setVisibility(View.VISIBLE);
+				}
 				mSpinner.setVisibility(View.GONE);
 				break;
 			case SPIN:
@@ -142,6 +176,8 @@ public class LoaderImageView extends LinearLayout{
 				mSpinner.setVisibility(View.VISIBLE);
 				break;
 			}
+			//the image could be of any dimensions. Set the dimensions of the image to the same dimensions as the LoaderImageView so the LoaderImageView doesn't suddenly drastically grow/shrink when the image loads.
+			mImage.setLayoutParams(new LayoutParams(getMeasuredWidth(), getMeasuredHeight()));
 			return true;
 		}		
 	});
@@ -152,8 +188,19 @@ public class LoaderImageView extends LinearLayout{
 	 * @throws IOException
 	 * @throws MalformedURLException
 	 */
-	private static Drawable getDrawableFromUrl(final String url) throws IOException, MalformedURLException {
-		return Drawable.createFromStream(((java.io.InputStream)new java.net.URL(url).getContent()), "name");
+	private Drawable getDrawableFromUrl(final String url) throws IOException, MalformedURLException {
+		final HttpGet get = new HttpGet(url);
+		final HttpResponse response = httpClient.execute(get);
+		final HttpEntity entity = response.getEntity();
+		if(entity==null){
+			throw new IllegalStateException("return entity is null. URL: " + url);
+		}else{
+			final InputStream content = entity.getContent();
+			try{
+				return Drawable.createFromStream(content, null);
+			}finally{
+				content.close();
+			}
+		}
 	}
-	
 }
