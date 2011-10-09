@@ -7,6 +7,7 @@ import roboguice.service.RoboService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
@@ -54,8 +55,8 @@ public class CallerIDService extends RoboService {
 	String previousCallerID = null;
 	
 	class ToastLookupAsyncTask extends LookupAsyncTask {
-		public ToastLookupAsyncTask(CharSequence phoneNumber) {
-			super(phoneNumber,toastLayout,sharedPreferences.getBoolean("popup_map", defaultPopupMap));
+		public ToastLookupAsyncTask(Context context, CharSequence phoneNumber) {
+			super(context, phoneNumber,toastLayout,sharedPreferences.getBoolean("popup_map", defaultPopupMap));
 		}
 		@Override
 		protected void onSuccess(CallerIDResult result)
@@ -113,7 +114,7 @@ public class CallerIDService extends RoboService {
 
 		if (TelephonyManager.EXTRA_STATE_RINGING.equals(phoneState)
 				&& !contactsHelper.haveContactWithPhoneNumber(phoneNumber)) {
-			currentLookupAsyncTask = new ToastLookupAsyncTask(phoneNumber);
+			currentLookupAsyncTask = new ToastLookupAsyncTask(this, phoneNumber);
 			currentLookupAsyncTask.execute();
 		} else {
 			toastLayout.setVisibility(View.GONE);

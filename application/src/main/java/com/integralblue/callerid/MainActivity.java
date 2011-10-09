@@ -3,6 +3,7 @@ package com.integralblue.callerid;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,8 +34,8 @@ public class MainActivity extends RoboActivity {
 	LookupAsyncTask currentLookupAsyncTask = null;
 	
 	class MainLookupAsyncTask extends LookupAsyncTask {
-		public MainLookupAsyncTask(CharSequence phoneNumber) {
-			super(phoneNumber,(ViewGroup) findViewById(R.id.toast_layout_root),true);
+		public MainLookupAsyncTask(Context context, CharSequence phoneNumber) {
+			super(context, phoneNumber,(ViewGroup) findViewById(R.id.toast_layout_root),true);
 		}
 		@Override
 		protected void onSuccess(CallerIDResult result)
@@ -128,7 +129,7 @@ public class MainActivity extends RoboActivity {
 		// we want to cancel any lookups in progress
 		if (currentLookupAsyncTask != null)
 			currentLookupAsyncTask.cancel(true);
-		currentLookupAsyncTask = new MainLookupAsyncTask(phoneNumber.getText());
+		currentLookupAsyncTask = new MainLookupAsyncTask(this, phoneNumber.getText());
 		currentLookupAsyncTask.execute();
     }
     

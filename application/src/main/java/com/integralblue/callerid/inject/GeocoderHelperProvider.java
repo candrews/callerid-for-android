@@ -3,8 +3,7 @@ package com.integralblue.callerid.inject;
 import java.lang.reflect.Method;
 
 import roboguice.util.Ln;
-
-import android.content.Context;
+import android.app.Application;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -15,7 +14,7 @@ import com.integralblue.callerid.geocoder.NominatimGeocoder;
 
 public class GeocoderHelperProvider implements Provider<Geocoder> {
 	@Inject
-	Context context;
+	Application application;
 
 	@Inject
 	Injector injector;
@@ -31,7 +30,7 @@ public class GeocoderHelperProvider implements Provider<Geocoder> {
 			Method method = geocoderClass.getMethod("isPresent");
 			Boolean isPresent = (Boolean) method.invoke(null, (Object[])null);
 			if(isPresent){
-				return new AndroidGeocoder(context);
+				return new AndroidGeocoder(application);
 			}
 		} catch (Exception e) {
 			Ln.e(e);

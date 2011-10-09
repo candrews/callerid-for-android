@@ -1,8 +1,8 @@
 package com.integralblue.callerid.contacts;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,14 +13,14 @@ import com.google.inject.Provider;
 import com.integralblue.callerid.CallerIDResult;
 
 public class NewContactsHelper implements ContactsHelper {
-	@Inject Context context;
+	@Inject Application application;
 	@Inject
 	Provider<Activity> activityProvider;
 	final static String[] projection = new String[] { ContactsContract.PhoneLookup.NUMBER };
 
 	public boolean haveContactWithPhoneNumber(String phoneNumber) {
 		final Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
-		final ContentResolver contentResolver = context.getContentResolver();
+		final ContentResolver contentResolver = application.getContentResolver();
 		final Cursor cursor = contentResolver.query(uri,projection,null,null,null);
 		try{
 			return cursor.moveToNext();

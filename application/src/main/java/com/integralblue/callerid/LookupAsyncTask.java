@@ -3,7 +3,6 @@ package com.integralblue.callerid;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
-import roboguice.inject.InjectorProvider;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
 import android.content.Context;
@@ -42,8 +41,8 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	@Inject
 	CallerIDLookup callerIDLookup;
 
-	public LookupAsyncTask(CharSequence phoneNumber, ViewGroup layout, boolean showMap) {
-		((InjectorProvider)contextProvider.get()).getInjector().injectMembers(this); //work around RoboGuice bug: https://code.google.com/p/roboguice/issues/detail?id=93
+	public LookupAsyncTask(Context context, CharSequence phoneNumber, ViewGroup layout, boolean showMap) {
+		super(context);
 		this.layout = layout;
 		this.phoneNumber = phoneNumber;
 		this.showMap = showMap;
@@ -51,7 +50,6 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 		address = (TextView) layout.findViewById(R.id.address);
 		image = (LoaderImageView) layout.findViewById(R.id.image);
 		
-		final Context context = contextProvider.get();
 		lookupNoResult = context.getString(R.string.lookup_no_result);
 		lookupError = context.getString(R.string.lookup_error);
 		lookupInProgress = context.getString(R.string.lookup_in_progress);
@@ -93,7 +91,7 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 			if(showMap){
 				if(result.getLatitude()!=null && result.getLongitude()!=null){
 					if(mapView == null){
-						LayoutInflater.from(contextProvider.get()).inflate(R.layout.map, layout, true);
+						LayoutInflater.from(getContext()).inflate(R.layout.map, layout, true);
 						mapView = (MapView) layout.findViewById(R.id.map_view);
 						mapView.setBuiltInZoomControls(true);
 					}
@@ -101,7 +99,7 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 					mapView.getController().setCenter(new GeoPoint(result.getLatitude(),result.getLongitude()));
 					mapView.setVisibility(View.VISIBLE);
 				}else{
-					geocoderAsyncTask = new GeocoderAsyncTask(result.getAddress(),layout);
+					geocoderAsyncTask = new GeocoderAsyncTask(getContext(),result.getAddress(),layout);
 					geocoderAsyncTask.execute();
 				}
 			}

@@ -1,7 +1,7 @@
 package com.integralblue.callerid.contacts;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.Application;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,7 +14,7 @@ import com.integralblue.callerid.CallerIDResult;
 
 @SuppressWarnings("deprecation")
 public class OldContactsHelper implements ContactsHelper {
-	@Inject Context context;
+	@Inject Application application;
 	@Inject
 	Provider<Activity> activityProvider;
 
@@ -24,7 +24,7 @@ public class OldContactsHelper implements ContactsHelper {
 		final Uri uri = Uri.withAppendedPath(
 				Contacts.Phones.CONTENT_FILTER_URL, Uri.encode(phoneNumber));
 
-		final Cursor cursor = context.getContentResolver().query(uri,projection,null,null,null);
+		final Cursor cursor = application.getContentResolver().query(uri,projection,null,null,null);
 		try{
 			return cursor.moveToNext();
 		}finally{

@@ -8,9 +8,9 @@ import org.osmdroid.views.MapView;
 import com.google.inject.Inject;
 import com.integralblue.callerid.geocoder.Geocoder;
 
-import roboguice.inject.InjectorProvider;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
+import android.content.Context;
 import android.location.Address;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,8 +24,8 @@ public class GeocoderAsyncTask extends RoboAsyncTask<Address> {
 	@Inject
 	Geocoder geocoder;
 
-	public GeocoderAsyncTask(final String locationName, final ViewGroup layout) {
-		((InjectorProvider)contextProvider.get()).getInjector().injectMembers(this); //work around RoboGuice bug: https://code.google.com/p/roboguice/issues/detail?id=93
+	public GeocoderAsyncTask(Context context, final String locationName, final ViewGroup layout) {
+		super(context);
 		this.locationName = locationName;
 		this.layout = layout;
 	}
@@ -47,7 +47,7 @@ public class GeocoderAsyncTask extends RoboAsyncTask<Address> {
 			if(mapView!=null) mapView.setVisibility(View.GONE);
 		}else{
 			if(mapView == null){
-				LayoutInflater.from(contextProvider.get()).inflate(R.layout.map, layout, true);
+				LayoutInflater.from(getContext()).inflate(R.layout.map, layout, true);
 				mapView = (MapView) layout.findViewById(R.id.map_view);
 				mapView.setBuiltInZoomControls(true);
 			}

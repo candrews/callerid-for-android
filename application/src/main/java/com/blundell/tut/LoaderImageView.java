@@ -9,7 +9,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
-import roboguice.inject.InjectorProvider;
+import roboguice.RoboGuice;
 import roboguice.util.Ln;
 
 import com.google.inject.Inject;
@@ -57,7 +57,7 @@ public class LoaderImageView extends LinearLayout{
 	 */
 	public LoaderImageView(final Context context, final AttributeSet attrSet) {
 		super(context, attrSet);
-		((InjectorProvider)context).getInjector().injectMembers(this);
+		RoboGuice.getInjector(context).injectMembers(this);
 		final String url = attrSet.getAttributeValue(null, "image");
 		errorResource = attrSet.getAttributeResourceValue(null, "error", 0);
 		if(errorResource == 0) errorResource = null;

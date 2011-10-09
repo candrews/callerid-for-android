@@ -28,7 +28,7 @@ android:debuggable="${android.debuggable}"
 	<uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
-		android:name=".CallerIDApplication" android:description="@string/app_description">
+		android:description="@string/app_description">
 
 		<activity android:name=".MainActivity" android:label="CallerID">
 			<intent-filter>
