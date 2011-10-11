@@ -18,4 +18,11 @@
     <string name="missed_call">Missed call</string>
     
     <string name="default_popup_map">true</string>
+    
+    <string name="new_version_dialog_title">There is a new version available.</string>
+    <string name="new_version_dialog_upgrade_button_text">Upgrade</string>
+    <string name="new_version_dialog_not_now_button_text">Not now</string>
+    <string name="new_version_dialog_never_button_text">Never</string>
+    <string name="new_version_no_android_market">The Android Market is not installed. Please upgrade the application using the same method you used to install it.</string>
+    
 </resources>

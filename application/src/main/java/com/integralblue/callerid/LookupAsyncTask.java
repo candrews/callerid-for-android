@@ -19,6 +19,8 @@ import com.integralblue.callerid.GeocoderAsyncTask;
 import com.integralblue.callerid.R;
 
 public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
+	
+	@Inject CallerIDApplication callerIDApplication;
 
 	final CharSequence phoneNumber;
 	
@@ -74,6 +76,7 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	protected void onSuccess(CallerIDResult result)
 			throws Exception {
 		super.onSuccess(result);
+		
 		if(result.getAddress()==null){
 			address.setVisibility(View.GONE);
 		}else{

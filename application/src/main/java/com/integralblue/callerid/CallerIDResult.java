@@ -9,6 +9,17 @@ public class CallerIDResult implements Serializable {
 
 	@JsonProperty("phoneNumber")
 	String phoneNumber;
+	
+	@JsonProperty("latestAndroidVersionCode")
+	Integer latestAndroidVersionCode;
+
+	public Integer getLatestAndroidVersionCode() {
+		return latestAndroidVersionCode;
+	}
+
+	public void setLatestAndroidVersionCode(Integer latestAndroidVersionCode) {
+		this.latestAndroidVersionCode = latestAndroidVersionCode;
+	}
 
 	public String getPhoneNumber() {
 		return phoneNumber;

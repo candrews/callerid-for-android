@@ -63,7 +63,6 @@ public class HttpClientProvider implements Provider<HttpClient> {
 		return ret.toString();
     }
 
-	@Override
 	public HttpClient get() {
 		AbstractHttpClient client = new DefaultHttpClient(){
 		    @Override

@@ -17,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Toast;
+
 import com.google.inject.Inject;
 import com.integralblue.callerid.contacts.ContactsHelper;
 
@@ -42,6 +44,9 @@ public class CallerIDService extends RoboService {
 	@Inject
 	SharedPreferences sharedPreferences;
 	
+	@Inject
+	SharedPreferences preferences;
+	
 	//@InjectResource(R.integer.default_popup_horizontal_gravity)
 	int defaultPopupHorizontalGravity;
 	
@@ -64,6 +69,13 @@ public class CallerIDService extends RoboService {
 			super.onSuccess(result);
 			toastLayout.setVisibility(View.VISIBLE);
 			previousCallerID = result.getName();
+			
+			if(result.getLatestAndroidVersionCode()!=null && !result.getLatestAndroidVersionCode().equals(-1)){
+				if (result.getLatestAndroidVersionCode() > callerIDApplication.getCurrentVersionCode()
+						&& preferences.getBoolean(CallerIDApplication.PROMPT_FOR_NEW_VERSION_PREFERENCE, true)) {
+					Toast.makeText(CallerIDService.this, R.string.new_version_dialog_title, Toast.LENGTH_LONG).show();
+				}
+			}
 		}
 		@Override
 		protected void onPreExecute() throws Exception {

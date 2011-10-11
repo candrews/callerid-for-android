@@ -3,8 +3,14 @@ package com.integralblue.callerid;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,10 +21,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import com.google.inject.Inject;
 import com.integralblue.callerid.contacts.ContactsHelper;
 
 public class MainActivity extends RoboActivity {
+	private static final int NEWER_VERSION_AVAILABLE_DIALOG = 1;
+	
+	@Inject
+	SharedPreferences preferences;
+	
 	@InjectView(R.id.phone_number)
 	EditText phoneNumber;
 	
@@ -33,6 +46,8 @@ public class MainActivity extends RoboActivity {
 	
 	LookupAsyncTask currentLookupAsyncTask = null;
 	
+	boolean promptedForNewVersion = false;
+	
 	class MainLookupAsyncTask extends LookupAsyncTask {
 		public MainLookupAsyncTask(Context context, CharSequence phoneNumber) {
 			super(context, phoneNumber,(ViewGroup) findViewById(R.id.toast_layout_root),true);
@@ -46,6 +61,14 @@ public class MainActivity extends RoboActivity {
 				createContact.setVisibility(View.GONE);
 			}else{
 				createContact.setVisibility(View.VISIBLE);
+			}
+			
+			if(result.getLatestAndroidVersionCode()!=null && !result.getLatestAndroidVersionCode().equals(-1)){
+				if (!promptedForNewVersion && result.getLatestAndroidVersionCode() > callerIDApplication.getCurrentVersionCode()
+						&& preferences.getBoolean(CallerIDApplication.PROMPT_FOR_NEW_VERSION_PREFERENCE, true)) {
+					promptedForNewVersion = true; // so we only prompt once per run of this activity
+					showDialog(NEWER_VERSION_AVAILABLE_DIALOG);
+				}
 			}
 		}
 		@Override
@@ -136,4 +159,44 @@ public class MainActivity extends RoboActivity {
     public void createContactClick(View button){
     	contactsHelper.createContactEditor(callerIDResult);
     }
+    
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+			case NEWER_VERSION_AVAILABLE_DIALOG:
+				return (new AlertDialog.Builder(this)
+					.setTitle(R.string.new_version_dialog_title)
+					.setPositiveButton(R.string.new_version_dialog_upgrade_button_text,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									try {
+										startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
+									} catch (ActivityNotFoundException e) {
+										Toast.makeText(MainActivity.this, R.string.new_version_no_android_market,
+												Toast.LENGTH_LONG).show();
+									}
+									dialog.dismiss();
+								}
+							})
+					.setNeutralButton(R.string.new_version_dialog_not_now_button_text,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									dialog.cancel();
+								}
+							})
+					.setNegativeButton(R.string.new_version_dialog_never_button_text,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									Editor e = preferences.edit();
+									e.putBoolean(CallerIDApplication.PROMPT_FOR_NEW_VERSION_PREFERENCE, false);
+									final boolean commitRet = e.commit();
+									assert (commitRet);
+									dialog.cancel();
+								}
+							}).create());
+			default:
+				return super.onCreateDialog(id);
+		}
+	}
 }

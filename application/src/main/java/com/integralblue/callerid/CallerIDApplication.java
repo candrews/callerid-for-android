@@ -2,11 +2,16 @@ package com.integralblue.callerid;
 
 import java.lang.reflect.Method;
 
+import roboguice.util.Ln;
+
 import android.app.Application;
 import android.app.Instrumentation;
 import android.content.pm.ApplicationInfo;
 
 public class CallerIDApplication extends Application {
+	
+	public static final String PROMPT_FOR_NEW_VERSION_PREFERENCE = "promptForNewVersion";
+	
 	public CallerIDApplication() {
 		super();
 	}
@@ -46,5 +51,13 @@ public class CallerIDApplication extends Application {
 			return ((applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
 		}
 	}
-
+	
+	public int getCurrentVersionCode(){
+		try {
+			return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+		} catch (Exception e) {
+			Ln.e(e, "Could not get the version code for the application");
+			return -1;
+		}
+	}
 }
