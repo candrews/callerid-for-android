@@ -15,7 +15,7 @@ public class CallerIDModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bindConstant().annotatedWith(SharedPreferencesName.class).to(this.getClass().getPackage().getName() + "_preferences"); 
+		bind(String.class).annotatedWith(SharedPreferencesName.class).toProvider(PreferencesNameProvider.class).in(Scopes.SINGLETON);
 		bind(ContactsHelper.class).toProvider(ContactsHelperProvider.class).in(Scopes.SINGLETON);
 		bind(CallerIDLookup.class).to(HttpCallerIDLookup.class).in(Scopes.SINGLETON);
 		bind(Geocoder.class).toProvider(GeocoderHelperProvider.class).in(Scopes.SINGLETON);
