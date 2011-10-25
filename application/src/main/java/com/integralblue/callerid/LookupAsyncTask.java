@@ -6,6 +6,7 @@ import org.osmdroid.views.MapView;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +14,14 @@ import android.widget.TextView;
 
 import com.blundell.tut.LoaderImageView;
 import com.google.inject.Inject;
-import com.integralblue.callerid.CallerIDLookup;
-import com.integralblue.callerid.CallerIDResult;
-import com.integralblue.callerid.GeocoderAsyncTask;
-import com.integralblue.callerid.R;
+import com.integralblue.callerid.inject.VersionInformationHelper;
 
 public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	
 	@Inject CallerIDApplication callerIDApplication;
+	
+	@Inject
+	SharedPreferences preferences;
 
 	final CharSequence phoneNumber;
 	
@@ -42,6 +43,9 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	
 	@Inject
 	CallerIDLookup callerIDLookup;
+	
+	@Inject
+	VersionInformationHelper versionInformationHelper;
 
 	public LookupAsyncTask(Context context, CharSequence phoneNumber, ViewGroup layout, boolean showMap) {
 		super(context);
@@ -58,7 +62,14 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	}
 
 	public CallerIDResult call() throws Exception {
-		return callerIDLookup.lookup(phoneNumber);
+		CallerIDResult result = callerIDLookup.lookup(phoneNumber);
+		
+		if(result.getLatestAndroidVersionCode()!=null && !result.getLatestAndroidVersionCode().equals(-1)){
+			//got version info from the server
+			versionInformationHelper.setLatestVersionCode(result.getLatestAndroidVersionCode());
+		}
+		
+		return result;
 	}
 
 	@Override

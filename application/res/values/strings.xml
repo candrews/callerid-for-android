@@ -12,6 +12,8 @@
     
     <string name="default_lookup_url"><![CDATA[http://callerid.integralblue.com/callerid.php?format=json&num={0}&country={1}]]></string>
     
+    <string name="app_home_url"><![CDATA[http://www.integralblue.com/callerid-for-android/]]></string>
+    
     <string name="missed_call_from_known">Missed call from {0}</string>
     <string name="missed_call_from_unknown">Missed call</string>
     
@@ -19,10 +21,12 @@
     
     <string name="default_popup_map">true</string>
     
-    <string name="new_version_dialog_title">There is a new version available.</string>
+    <string name="new_version_dialog_title">There is a new version of CallerID available.</string>
     <string name="new_version_dialog_upgrade_button_text">Upgrade</string>
     <string name="new_version_dialog_not_now_button_text">Not now</string>
     <string name="new_version_dialog_never_button_text">Never</string>
-    <string name="new_version_no_android_market">The Android Market is not installed. Please upgrade the application using the same method you used to install it.</string>
+    <string name="new_version_unknown_signature">Please upgrade the application using the same method you used to install it.</string>
     
+    <!-- to get the signature MD5, open the apk, extract /META-INF/<whatever>.RSA, then run keytool -list <whatever>.RSA -->
+    <string name="integralblue_signature_md5">0F43DA02C06C900890B9D7BBB3406F01</string>
 </resources>

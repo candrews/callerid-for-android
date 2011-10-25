@@ -10,8 +10,6 @@ import android.content.pm.ApplicationInfo;
 
 public class CallerIDApplication extends Application {
 	
-	public static final String PROMPT_FOR_NEW_VERSION_PREFERENCE = "promptForNewVersion";
-	
 	public CallerIDApplication() {
 		super();
 	}
@@ -36,8 +34,8 @@ public class CallerIDApplication extends Application {
 	        } catch (Exception e) {
                 //The version of Android we're on doesn't have android.os.StrictMode
                 //so ignore this exception
+	        	Ln.e(e);
 	        }
-	        
 		}
 	}
 
@@ -49,15 +47,6 @@ public class CallerIDApplication extends Application {
 		} else {
 			int applicationFlags = getApplicationInfo().flags;
 			return ((applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
-		}
-	}
-	
-	public int getCurrentVersionCode(){
-		try {
-			return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-		} catch (Exception e) {
-			Ln.e(e, "Could not get the version code for the application");
-			return -1;
 		}
 	}
 }

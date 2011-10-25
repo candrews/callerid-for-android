@@ -20,7 +20,7 @@ import org.apache.http.params.HttpProtocolParams;
 import roboguice.util.Ln;
 import android.app.Application;
 import android.content.Context;
-import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.PackageInfo;
 import android.os.Build;
 
 import com.google.inject.Inject;
@@ -30,6 +30,8 @@ public class HttpClientProvider implements Provider<HttpClient> {
 	@Inject
 	Application application;
 	
+	@Inject PackageInfo packageInfo;
+	
     // Wait this many milliseconds max for the TCP connection to be established
     private static final int CONNECTION_TIMEOUT = 60 * 1000;
     
@@ -38,12 +40,7 @@ public class HttpClientProvider implements Provider<HttpClient> {
     
     private String getUserAgent(String defaultHttpClientUserAgent){
     	String versionName;
-		try {
-			versionName = application.getPackageManager().getPackageInfo(
-					application.getPackageName(), 0).versionName;
-		} catch (NameNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+			versionName = packageInfo.versionName;
 		StringBuilder ret = new StringBuilder();
 		ret.append(application.getPackageName());
 		ret.append("/");

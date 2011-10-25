@@ -5,12 +5,9 @@ import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,16 +18,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.inject.Inject;
 import com.integralblue.callerid.contacts.ContactsHelper;
+import com.integralblue.callerid.inject.VersionInformationHelper;
 
 public class MainActivity extends RoboActivity {
 	private static final int NEWER_VERSION_AVAILABLE_DIALOG = 1;
-	
-	@Inject
-	SharedPreferences preferences;
 	
 	@InjectView(R.id.phone_number)
 	EditText phoneNumber;
@@ -42,10 +36,14 @@ public class MainActivity extends RoboActivity {
 	Button createContact;
 	
 	@Inject
+	VersionInformationHelper versionInformationHelper;
+	
+	@Inject
 	ContactsHelper contactsHelper;
 	
 	LookupAsyncTask currentLookupAsyncTask = null;
 	
+	//keep track of if we've prompted them already. We only want to prompt the user once per run of the application.
 	boolean promptedForNewVersion = false;
 	
 	class MainLookupAsyncTask extends LookupAsyncTask {
@@ -56,19 +54,17 @@ public class MainActivity extends RoboActivity {
 		protected void onSuccess(CallerIDResult result)
 				throws Exception {
 			super.onSuccess(result);
+			
+			if (!promptedForNewVersion && versionInformationHelper.shouldPromptForNewVersion()) {
+				promptedForNewVersion = true;
+				showDialog(NEWER_VERSION_AVAILABLE_DIALOG);
+			}
+			
 			callerIDResult = result;
 			if(contactsHelper.haveContactWithPhoneNumber(result.getPhoneNumber())){
 				createContact.setVisibility(View.GONE);
 			}else{
 				createContact.setVisibility(View.VISIBLE);
-			}
-			
-			if(result.getLatestAndroidVersionCode()!=null && !result.getLatestAndroidVersionCode().equals(-1)){
-				if (!promptedForNewVersion && result.getLatestAndroidVersionCode() > callerIDApplication.getCurrentVersionCode()
-						&& preferences.getBoolean(CallerIDApplication.PROMPT_FOR_NEW_VERSION_PREFERENCE, true)) {
-					promptedForNewVersion = true; // so we only prompt once per run of this activity
-					showDialog(NEWER_VERSION_AVAILABLE_DIALOG);
-				}
 			}
 		}
 		@Override
@@ -116,6 +112,11 @@ public class MainActivity extends RoboActivity {
             	createContactClick(v);
             }
         });
+
+		if (!promptedForNewVersion && versionInformationHelper.shouldPromptForNewVersion()) {
+			promptedForNewVersion = true;
+			showDialog(NEWER_VERSION_AVAILABLE_DIALOG);
+		}
         
         //if a phone number was passed in, look it up
         final String initialPhoneNumber = this.getIntent().getStringExtra("phoneNumber");
@@ -170,12 +171,7 @@ public class MainActivity extends RoboActivity {
 					.setPositiveButton(R.string.new_version_dialog_upgrade_button_text,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int which) {
-									try {
-										startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
-									} catch (ActivityNotFoundException e) {
-										Toast.makeText(MainActivity.this, R.string.new_version_no_android_market,
-												Toast.LENGTH_LONG).show();
-									}
+									versionInformationHelper.showNewVersionInformation();
 									dialog.dismiss();
 								}
 							})
@@ -188,10 +184,7 @@ public class MainActivity extends RoboActivity {
 					.setNegativeButton(R.string.new_version_dialog_never_button_text,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int which) {
-									Editor e = preferences.edit();
-									e.putBoolean(CallerIDApplication.PROMPT_FOR_NEW_VERSION_PREFERENCE, false);
-									final boolean commitRet = e.commit();
-									assert (commitRet);
+									versionInformationHelper.setAllowPromptForNewVersion(false);
 									dialog.cancel();
 								}
 							}).create());

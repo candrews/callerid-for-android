@@ -31,4 +31,12 @@
 		                android:title="Set the URL used to perform Caller ID lookups"
 		                android:key="lookup_url" />
         </PreferenceCategory>
+		<PreferenceCategory
+                android:title="Misc">
+                <CheckBoxPreference
+                		android:title="Prompt for upgrade"
+                		android:summary="Display a prompt when a new version is available"
+                		android:key="promptForNewVersion"
+                		android:defaultValue="true" />
+        </PreferenceCategory>
 </PreferenceScreen>
