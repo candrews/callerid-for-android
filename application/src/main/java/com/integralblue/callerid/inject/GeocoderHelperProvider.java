@@ -19,6 +19,9 @@ public class GeocoderHelperProvider implements Provider<Geocoder> {
 	@Inject
 	Injector injector;
 	
+	@Inject
+	NominatimGeocoder nominatimGeocoder;
+	
 	public Geocoder get() {
 		//Only use the built in (aka Android) geocoder if it is present
 		//Otherwise, use the Nominatim geocoder (from OpenStreetMaps)
@@ -30,16 +33,15 @@ public class GeocoderHelperProvider implements Provider<Geocoder> {
 			Method method = geocoderClass.getMethod("isPresent");
 			Boolean isPresent = (Boolean) method.invoke(null, (Object[])null);
 			if(isPresent){
-				return new AndroidGeocoder(application);
+				AndroidGeocoder ret = new AndroidGeocoder(application);
+				injector.injectMembers(ret);
+				return ret;
 			}
 		} catch (Exception e) {
 			Ln.e(e);
 			//ignore the exception - we'll just fall back to our geocoder
 		}
-
-		Geocoder ret = new NominatimGeocoder();
-		injector.injectMembers(ret);
-		return ret;
+		return nominatimGeocoder;
 	}
 
 }

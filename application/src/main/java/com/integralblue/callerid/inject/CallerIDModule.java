@@ -10,6 +10,7 @@ import com.integralblue.callerid.CallerIDLookup;
 import com.integralblue.callerid.HttpCallerIDLookup;
 import com.integralblue.callerid.contacts.ContactsHelper;
 import com.integralblue.callerid.geocoder.Geocoder;
+import com.integralblue.callerid.geocoder.NominatimGeocoder;
 
 public class CallerIDModule extends AbstractModule {
 
@@ -19,7 +20,9 @@ public class CallerIDModule extends AbstractModule {
 		bind(ContactsHelper.class).toProvider(ContactsHelperProvider.class).in(Scopes.SINGLETON);
 		bind(CallerIDLookup.class).to(HttpCallerIDLookup.class).in(Scopes.SINGLETON);
 		bind(Geocoder.class).toProvider(GeocoderHelperProvider.class).in(Scopes.SINGLETON);
+		bind(NominatimGeocoder.class).in(Scopes.SINGLETON);
 		bind(HttpClient.class).toProvider(HttpClientProvider.class).in(Scopes.SINGLETON);
+		bind(VersionInformationHelper.class).in(Scopes.SINGLETON);
 	}
 
 }
