@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>org.roboguice</groupId>
 			<artifactId>roboguice</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>2.0b2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -35,7 +35,7 @@
             <!-- Using Jackson for JSON marshaling -->
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.8.5</version>
+            <version>1.9.1</version>
         </dependency>
         <dependency>
         	<!-- Jackson can use joda time,
@@ -44,7 +44,7 @@
         	we have to include the dependency -->
 		    <groupId>joda-time</groupId>
 		    <artifactId>joda-time</artifactId>
-		    <version>1.6.2</version>
+		    <version>2.0</version>
 		</dependency>
 		<!-- begin map dependencies -->
 		<!-- required by org.osmdroid.osmdroid -->
@@ -56,7 +56,7 @@
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpmime</artifactId>
-		    <version>4.1.1</version>
+		    <version>4.1.2</version>
 		    <exclusions>
 		    	<exclusion>
 		    		<!-- >org.slf4j:slf4j-android fulfills this dependency -->
@@ -161,7 +161,7 @@
 					</plugin>
 					<plugin>
 						<groupId>com.jayway.maven.plugins.android.generation2</groupId>
-						<artifactId>maven-android-plugin</artifactId>
+						<artifactId>android-maven-plugin</artifactId>
 						<executions>
 							<execution>
 								<id>zipalign-application-apk</id>
