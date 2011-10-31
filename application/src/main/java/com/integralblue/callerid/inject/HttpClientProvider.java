@@ -2,6 +2,7 @@ package com.integralblue.callerid.inject;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.util.Locale;
 
 import org.apache.http.client.HttpClient;
@@ -29,6 +30,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.os.Build;
+import android.os.StrictMode;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -100,6 +102,13 @@ public class HttpClientProvider implements Provider<HttpClient> {
 		    }
 		};
 		
+		//temporarily turn off strict mode
+		//FileResourceFactory calls BasicIdGenerator which call InetAddress.getLocalHost()
+		//this call seems harmless - so to avoid a NetworkOnMainThreadException
+		//turn down strict mode, then turn it back on when we're done
+		StrictMode.ThreadPolicy originalPolicy = StrictMode.getThreadPolicy();
+		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
+		
 		final CacheConfig cacheConfig = new CacheConfig();
         cacheConfig.setSharedCache(false);
         cacheConfig.setMaxObjectSizeBytes(262144); //256kb
@@ -114,6 +123,9 @@ public class HttpClientProvider implements Provider<HttpClient> {
         final HttpCacheStorage httpCacheStorage = new ManagedHttpCacheStorage(cacheConfig);
         
         final CachingHttpClient cachingHttpClient = new CachingHttpClient(client, resourceFactory, httpCacheStorage, cacheConfig);
+        
+        StrictMode.setThreadPolicy(originalPolicy);
+        
         return cachingHttpClient;
 	}
 
