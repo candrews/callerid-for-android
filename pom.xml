@@ -46,6 +46,18 @@
         <version>2.3.1</version>
         <scope>provided</scope>
       </dependency>
+	  <dependency>
+	    <groupId>org.apache.httpcomponents</groupId>
+	    <artifactId>httpclient</artifactId>
+	    <version>4.0.1</version>
+	    <scope>provided</scope>
+	  </dependency>
+	  <dependency>
+	    <groupId>org.apache.httpcomponents</groupId>
+	    <artifactId>httpcore</artifactId>
+	    <version>4.0.1</version>
+	    <scope>provided</scope>
+	  </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -293,5 +305,23 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+	  	<repository>
+	  		<id>repo</id>
+	  		<url>https://repo.molecular.com/artifactory/repo</url>
+	  		<snapshots>
+	  			<enabled>true</enabled>
+	  		</snapshots>
+	  	</repository>
+  	  	<repository>
+	      	<id>apache.staging</id>
+	      	<name>Apache Staging Repository</name>
+	      	<url>https://repository.apache.org/content/groups/staging/</url>
+	      	<releases>
+	        	<enabled>true</enabled>
+	      	</releases>
+	      	<snapshots>
+	          	<enabled>true</enabled>
+	      	</snapshots>
+	  	</repository>
   </repositories>
 </project>

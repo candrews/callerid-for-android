@@ -81,6 +81,12 @@
 			<version>3.0.3</version>
 		</dependency>
 		<!-- end map dependencies -->
+		
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient-cache</artifactId>
+			<version>4.2-alpha1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

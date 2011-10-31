@@ -1,9 +1,12 @@
 package com.integralblue.callerid.inject;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.cache.HttpCacheStorage;
+import org.apache.http.client.cache.ResourceFactory;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -12,6 +15,10 @@ import org.apache.http.conn.scheme.SocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.cache.CacheConfig;
+import org.apache.http.impl.client.cache.CachingHttpClient;
+import org.apache.http.impl.client.cache.FileResourceFactory;
+import org.apache.http.impl.client.cache.ManagedHttpCacheStorage;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -93,7 +100,21 @@ public class HttpClientProvider implements Provider<HttpClient> {
 		    }
 		};
 		
-		return client;
+		final CacheConfig cacheConfig = new CacheConfig();
+        cacheConfig.setSharedCache(false);
+        cacheConfig.setMaxObjectSizeBytes(262144); //256kb
+        
+        if(! new File(application.getCacheDir(), "httpclient-cache").exists()){
+        	if(!new File(application.getCacheDir(), "httpclient-cache").mkdir()){
+        		throw new RuntimeException("failed to create httpclient cache directory: " + new File(application.getCacheDir(), "httpclient-cache").getAbsolutePath());
+        	}
+        }
+        final ResourceFactory resourceFactory = new FileResourceFactory(new File(application.getCacheDir(), "httpclient-cache"));
+        
+        final HttpCacheStorage httpCacheStorage = new ManagedHttpCacheStorage(cacheConfig);
+        
+        final CachingHttpClient cachingHttpClient = new CachingHttpClient(client, resourceFactory, httpCacheStorage, cacheConfig);
+        return cachingHttpClient;
 	}
 
 }

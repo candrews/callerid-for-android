@@ -3,8 +3,12 @@ package com.integralblue.callerid.inject;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import android.app.AlertDialog;
 import android.app.Application;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -93,11 +97,13 @@ public class VersionInformationHelper {
 	 * @param versionCode
 	 */
 	public void setLatestVersionCode(int versionCode){
-		//the version info from the server is greater than what we believe the latest version is
-		//save the version info in a preference for access elsewhere
-		Editor editor = sharedPreferences.edit();
-		editor.putInt(LATEST_VERSION_PREFERENCE, versionCode);
-		editor.commit();
+		if(versionCode > getLatestVersionCode()){
+			//the version info from the server is greater than what we believe the latest version is
+			//save the version info in a preference for access elsewhere
+			Editor editor = sharedPreferences.edit();
+			editor.putInt(LATEST_VERSION_PREFERENCE, versionCode);
+			editor.commit();
+		}
 	}
 	
 	/** Is there a later version of the application available than what is currently running?
@@ -131,5 +137,30 @@ public class VersionInformationHelper {
         } catch (NoSuchAlgorithmException e) {
         	throw new RuntimeException("How can the MD5 message digest algorithm not be available?!",e);
         }
+	}
+    
+	public Dialog createNewVersionDialog(Context context){
+		return (new AlertDialog.Builder(context)
+			.setTitle(R.string.new_version_dialog_title)
+			.setPositiveButton(R.string.new_version_dialog_upgrade_button_text,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							showNewVersionInformation();
+							dialog.dismiss();
+						}
+					})
+			.setNeutralButton(R.string.new_version_dialog_not_now_button_text,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					})
+			.setNegativeButton(R.string.new_version_dialog_never_button_text,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							setAllowPromptForNewVersion(false);
+							dialog.cancel();
+						}
+					}).create());
 	}
 }

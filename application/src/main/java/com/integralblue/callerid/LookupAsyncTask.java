@@ -64,7 +64,7 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	public CallerIDResult call() throws Exception {
 		CallerIDResult result = callerIDLookup.lookup(phoneNumber);
 		
-		if(result.getLatestAndroidVersionCode()!=null && !result.getLatestAndroidVersionCode().equals(-1)){
+		if(result.getLatestAndroidVersionCode()!=null){
 			//got version info from the server
 			versionInformationHelper.setLatestVersionCode(result.getLatestAndroidVersionCode());
 		}

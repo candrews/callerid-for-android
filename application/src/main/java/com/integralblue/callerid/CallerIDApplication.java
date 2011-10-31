@@ -49,4 +49,13 @@ public class CallerIDApplication extends Application {
 			return ((applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
 		}
 	}
+	
+    //copied from Android 2.3 PhoneNumberUtils.isUriNumber
+    //SIP support is not available before 2.3 so this method doesn't exist
+    public static boolean isUriNumber(String number) {
+        // Note we allow either "@" or "%40" to indicate a URI, in case
+        // the passed-in string is URI-escaped.  (Neither "@" nor "%40"
+        // will ever be found in a legal PSTN number.)
+        return number != null && (number.contains("@") || number.contains("%40"));
+    }
 }
