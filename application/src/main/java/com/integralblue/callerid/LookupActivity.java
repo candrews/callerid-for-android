@@ -180,7 +180,7 @@ public class LookupActivity extends RoboActivity {
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 			case NEWER_VERSION_AVAILABLE_DIALOG:
-				versionInformationHelper.createNewVersionDialog(this);
+				return versionInformationHelper.createNewVersionDialog(this);
 			default:
 				return super.onCreateDialog(id);
 		}

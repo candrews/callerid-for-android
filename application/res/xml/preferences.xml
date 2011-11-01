@@ -21,6 +21,11 @@
                 		android:summary="Display mini-map of caller's address"
                 		android:key="popup_map"
                 		android:defaultValue="@string/default_popup_map" />
+                <CheckBoxPreference
+                		android:title="Speak CallerID information aloud"
+                		android:summary="Say the name of the incoming caller"
+                		android:key="tts_enabled"
+                		android:defaultValue="false" />
         </PreferenceCategory>
 		<PreferenceCategory
                 android:title="Lookup source">

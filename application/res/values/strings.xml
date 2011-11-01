@@ -29,4 +29,8 @@
     
     <!-- to get the signature MD5, open the apk, extract /META-INF/<whatever>.RSA, then run keytool -list <whatever>.RSA -->
     <string name="integralblue_signature_md5">0F43DA02C06C900890B9D7BBB3406F01</string>
+    
+    <string name="incoming_call_tts">Call from %s</string>
+    
+    <string name="tts_initialization_error">Failed to initialize the TTS engine</string>
 </resources>

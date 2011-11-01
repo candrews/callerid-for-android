@@ -1,6 +1,9 @@
 package com.integralblue.callerid;
 
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import roboguice.service.RoboService;
@@ -11,7 +14,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.media.AudioManager;
 import android.os.IBinder;
+import android.speech.tts.TextToSpeech;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,12 +65,19 @@ public class CallerIDService extends RoboService {
 	String previousPhoneNumber = null;
 	String previousCallerID = null;
 	
+	boolean ttsEnabled;
+	
+	TextToSpeech textToSpeech;
+	static final Map<String, String> ttsParametersMap = Collections.singletonMap(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(AudioManager.STREAM_RING));
+	
 	class ToastLookupAsyncTask extends LookupAsyncTask {
+		
 		public ToastLookupAsyncTask(Context context, CharSequence phoneNumber) {
 			super(context, phoneNumber,toastLayout,sharedPreferences.getBoolean("popup_map", defaultPopupMap));
 		}
+
 		@Override
-		protected void onSuccess(CallerIDResult result)
+		protected void onSuccess(final CallerIDResult result)
 				throws Exception {
 			super.onSuccess(result);
 			toastLayout.setVisibility(View.VISIBLE);
@@ -73,6 +85,10 @@ public class CallerIDService extends RoboService {
 			
 			if(versionInformationHelper.shouldPromptForNewVersion()){
 				Toast.makeText(CallerIDService.this, R.string.new_version_dialog_title, Toast.LENGTH_LONG).show();
+			}
+			
+			if(ttsEnabled){
+				textToSpeech.speak(getString(R.string.incoming_call_tts, result.getName()), TextToSpeech.QUEUE_FLUSH,null);
 			}
 		}
 		@Override
@@ -146,6 +162,10 @@ public class CallerIDService extends RoboService {
 			notification.setLatestEventInfo(getApplicationContext(), getString(R.string.missed_call), previousCallerID==null?getString(R.string.perform_lookup_label):previousCallerID, contentIntent);
 			notification.flags |= Notification.FLAG_AUTO_CANCEL;
 			notificationManager.notify(new Random().nextInt(), notification);
+			
+			if(ttsEnabled && textToSpeech!=null){
+				textToSpeech.stop();
+			}
 		}
 		previousPhoneNumber = phoneNumber;
 		previousPhoneState = phoneState;
@@ -180,6 +200,20 @@ public class CallerIDService extends RoboService {
 			params.gravity |= defaultPopupHorizontalGravity;
 		else
 			params.gravity |= Integer.parseInt(popupHorizontalGravity);
+		ttsEnabled = sharedPreferences.getBoolean("tts_enabled", false);
+		if(ttsEnabled){
+			textToSpeech = new TextToSpeech(this,new TextToSpeech.OnInitListener() {
+				@Override
+				public void onInit(int status) {
+					// status can be either TextToSpeech.SUCCESS or TextToSpeech.ERROR.
+			        if (status == TextToSpeech.SUCCESS) {
+			        	
+			        }else{
+			        	Toast.makeText(CallerIDService.this, R.string.tts_initialization_error, Toast.LENGTH_LONG).show();
+			        }
+				}
+			});
+		}
 		toastLayout.setVisibility(View.GONE);
 		windowManager.addView(toastLayout, params);
 	}
@@ -193,5 +227,6 @@ public class CallerIDService extends RoboService {
 	@Override
 	public void onDestroy() {
 		windowManager.removeView(toastLayout);
+		if(textToSpeech!=null) textToSpeech.shutdown();
 	}
 }
