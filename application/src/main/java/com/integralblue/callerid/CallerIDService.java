@@ -88,7 +88,7 @@ public class CallerIDService extends RoboService {
 			}
 			
 			if(ttsEnabled){
-				textToSpeech.speak(getString(R.string.incoming_call_tts, result.getName()), TextToSpeech.QUEUE_FLUSH,null);
+				textToSpeech.speak(getString(R.string.incoming_call_tts, result.getName()), TextToSpeech.QUEUE_FLUSH, ttsParametersMap);
 			}
 		}
 		@Override
