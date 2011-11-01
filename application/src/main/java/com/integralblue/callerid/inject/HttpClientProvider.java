@@ -2,7 +2,6 @@ package com.integralblue.callerid.inject;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.net.InetAddress;
 import java.util.Locale;
 
 import org.apache.http.client.HttpClient;
@@ -30,7 +29,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.os.Build;
-import android.os.StrictMode;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -106,25 +104,54 @@ public class HttpClientProvider implements Provider<HttpClient> {
 		//FileResourceFactory calls BasicIdGenerator which call InetAddress.getLocalHost()
 		//this call seems harmless - so to avoid a NetworkOnMainThreadException
 		//turn down strict mode, then turn it back on when we're done
-		StrictMode.ThreadPolicy originalPolicy = StrictMode.getThreadPolicy();
-		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
-		
-		final CacheConfig cacheConfig = new CacheConfig();
-        cacheConfig.setSharedCache(false);
-        cacheConfig.setMaxObjectSizeBytes(262144); //256kb
-        
-        if(! new File(application.getCacheDir(), "httpclient-cache").exists()){
-        	if(!new File(application.getCacheDir(), "httpclient-cache").mkdir()){
-        		throw new RuntimeException("failed to create httpclient cache directory: " + new File(application.getCacheDir(), "httpclient-cache").getAbsolutePath());
-        	}
+		Class<?> strictMode = null;
+		Object originalPolicy = null;
+		try{
+			//the following is equivalent to:
+			//originalPolicy = StrictMode.getThreadPolicy();
+			//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
+	        strictMode = Class.forName("android.os.StrictMode");
+	        final Method getThreadPolicy = strictMode.getMethod("getThreadPolicy");
+			originalPolicy = getThreadPolicy.invoke(null, (Object[]) null);
+			Object builder = Class.forName("android.os.StrictMode$ThreadPolicy$Builder").newInstance();
+			Object permitAll = builder.getClass().getMethod("permitAll").invoke(builder, (Object[])null);
+			Object permitAllThreadPolicy = permitAll.getClass().getMethod("build").invoke(permitAll, (Object[])null);
+			strictMode.getMethod("setThreadPolicy", Class.forName("android.os.StrictMode$ThreadPolicy")).invoke(null, permitAllThreadPolicy);
+		}catch(Exception e){
+			Ln.d(e);
+			//it's okay - we must be on a platform that doesn't have the StrictMode class (API<10)
+		}
+		HttpClient cachingHttpClient;
+        try{
+			final CacheConfig cacheConfig = new CacheConfig();
+	        cacheConfig.setSharedCache(false);
+	        cacheConfig.setMaxObjectSizeBytes(262144); //256kb
+	        
+	        if(! new File(application.getCacheDir(), "httpclient-cache").exists()){
+	        	if(!new File(application.getCacheDir(), "httpclient-cache").mkdir()){
+	        		throw new RuntimeException("failed to create httpclient cache directory: " + new File(application.getCacheDir(), "httpclient-cache").getAbsolutePath());
+	        	}
+	        }
+	        final ResourceFactory resourceFactory = new FileResourceFactory(new File(application.getCacheDir(), "httpclient-cache"));
+	        
+	        final HttpCacheStorage httpCacheStorage = new ManagedHttpCacheStorage(cacheConfig);
+	        
+        	cachingHttpClient = new CachingHttpClient(client, resourceFactory, httpCacheStorage, cacheConfig);
+        }catch(VerifyError e){
+        	//older version of Android are missing some of the fields used by the caching HTTP client.
+        	//example exception:
+        	//Could not find method org.apache.http.util.EntityUtils.consume, referenced from method org.apache.http.impl.client.cache.ResponseProtocolCompliance.consumeBody
+        	Ln.w("Failed to set up the cachingHttpClient, falling back to non-caching",e);
+        	cachingHttpClient = client;
         }
-        final ResourceFactory resourceFactory = new FileResourceFactory(new File(application.getCacheDir(), "httpclient-cache"));
-        
-        final HttpCacheStorage httpCacheStorage = new ManagedHttpCacheStorage(cacheConfig);
-        
-        final CachingHttpClient cachingHttpClient = new CachingHttpClient(client, resourceFactory, httpCacheStorage, cacheConfig);
-        
-        StrictMode.setThreadPolicy(originalPolicy);
+        try{
+			//the following is equivalent to:
+        	//StrictMode.setThreadPolicy(originalPolicy);
+        	strictMode.getMethod("setThreadPolicy", Class.forName("android.os.StrictMode$ThreadPolicy")).invoke(null, originalPolicy);
+        }catch(Exception e){
+			Ln.d(e);
+			//it's okay - we must be on a platform that doesn't have the StrictMode class (API<10)
+        }
         
         return cachingHttpClient;
 	}
