@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Random;
 
 import roboguice.service.RoboService;
+import roboguice.util.Strings;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -25,7 +26,9 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.inject.Inject;
+import com.integralblue.callerid.CallerIDLookup.NoResultException;
 import com.integralblue.callerid.contacts.ContactsHelper;
+import com.integralblue.callerid.inject.TextToSpeechHelper;
 import com.integralblue.callerid.inject.VersionInformationHelper;
 
 public class CallerIDService extends RoboService {
@@ -53,6 +56,8 @@ public class CallerIDService extends RoboService {
 	@Inject
 	SharedPreferences sharedPreferences;
 	
+	@Inject TextToSpeechHelper textToSpeechHelper;
+	
 	//@InjectResource(R.integer.default_popup_horizontal_gravity)
 	int defaultPopupHorizontalGravity;
 	
@@ -67,8 +72,11 @@ public class CallerIDService extends RoboService {
 	
 	boolean ttsEnabled;
 	
-	TextToSpeech textToSpeech;
-	static final Map<String, String> ttsParametersMap = Collections.singletonMap(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(AudioManager.STREAM_RING));
+	static final HashMap<String, String> ttsParametersMap;
+	static {
+		ttsParametersMap = new HashMap<String, String>();
+		ttsParametersMap.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(AudioManager.STREAM_RING));
+	}
 	
 	class ToastLookupAsyncTask extends LookupAsyncTask {
 		
@@ -88,7 +96,7 @@ public class CallerIDService extends RoboService {
 			}
 			
 			if(ttsEnabled){
-				textToSpeech.speak(getString(R.string.incoming_call_tts, result.getName()), TextToSpeech.QUEUE_FLUSH, ttsParametersMap);
+				textToSpeechHelper.speak(getString(R.string.incoming_call_tts, result.getName()), TextToSpeech.QUEUE_FLUSH, ttsParametersMap);
 			}
 		}
 		@Override
@@ -102,6 +110,9 @@ public class CallerIDService extends RoboService {
 			super.onException(e);
 			toastLayout.setVisibility(View.VISIBLE);
 			previousCallerID = null;
+			if (e instanceof CallerIDLookup.NoResultException) {
+				textToSpeechHelper.speak(getString(R.string.incoming_call_tts_unknown), TextToSpeech.QUEUE_FLUSH, ttsParametersMap);
+			}
 		}
 		@Override
 		protected void onInterrupted(Exception e) {
@@ -138,10 +149,19 @@ public class CallerIDService extends RoboService {
 		if (currentLookupAsyncTask != null)
 			currentLookupAsyncTask.cancel(true);
 
-		if (TelephonyManager.EXTRA_STATE_RINGING.equals(phoneState)
-				&& !contactsHelper.haveContactWithPhoneNumber(phoneNumber)) {
-			currentLookupAsyncTask = new ToastLookupAsyncTask(this, phoneNumber);
-			currentLookupAsyncTask.execute();
+		if (TelephonyManager.EXTRA_STATE_RINGING.equals(phoneState)) {
+			try{
+				CallerIDResult result = contactsHelper.getContact(phoneNumber);
+				toastLayout.setVisibility(View.GONE);
+				//speak the contact's name even when we don't need to use the CallerID service to get information
+				
+				if(ttsEnabled && result.getName()!=null && result.getName()!=""){
+					textToSpeechHelper.speak(getString(R.string.incoming_call_tts, result.getName()), TextToSpeech.QUEUE_FLUSH, ttsParametersMap);
+				}
+			}catch(NoResultException e){
+				currentLookupAsyncTask = new ToastLookupAsyncTask(this, phoneNumber);
+				currentLookupAsyncTask.execute();
+			}
 		} else {
 			toastLayout.setVisibility(View.GONE);
 			stopSelf(startId);
@@ -163,8 +183,8 @@ public class CallerIDService extends RoboService {
 			notification.flags |= Notification.FLAG_AUTO_CANCEL;
 			notificationManager.notify(new Random().nextInt(), notification);
 			
-			if(ttsEnabled && textToSpeech!=null){
-				textToSpeech.stop();
+			if(ttsEnabled){
+				textToSpeechHelper.stop();
 			}
 		}
 		previousPhoneNumber = phoneNumber;
@@ -201,19 +221,6 @@ public class CallerIDService extends RoboService {
 		else
 			params.gravity |= Integer.parseInt(popupHorizontalGravity);
 		ttsEnabled = sharedPreferences.getBoolean("tts_enabled", false);
-		if(ttsEnabled){
-			textToSpeech = new TextToSpeech(this,new TextToSpeech.OnInitListener() {
-				@Override
-				public void onInit(int status) {
-					// status can be either TextToSpeech.SUCCESS or TextToSpeech.ERROR.
-			        if (status == TextToSpeech.SUCCESS) {
-			        	
-			        }else{
-			        	Toast.makeText(CallerIDService.this, R.string.tts_initialization_error, Toast.LENGTH_LONG).show();
-			        }
-				}
-			});
-		}
 		toastLayout.setVisibility(View.GONE);
 		windowManager.addView(toastLayout, params);
 	}
@@ -227,6 +234,6 @@ public class CallerIDService extends RoboService {
 	@Override
 	public void onDestroy() {
 		windowManager.removeView(toastLayout);
-		if(textToSpeech!=null) textToSpeech.shutdown();
+		textToSpeechHelper.shutdown();
 	}
 }

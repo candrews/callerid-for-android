@@ -23,6 +23,7 @@ public class CallerIDModule extends AbstractModule {
 		bind(NominatimGeocoder.class).in(Scopes.SINGLETON);
 		bind(HttpClient.class).toProvider(HttpClientProvider.class).in(Scopes.SINGLETON);
 		bind(VersionInformationHelper.class).in(Scopes.SINGLETON);
+		bind(TextToSpeechHelper.class).in(Scopes.SINGLETON);
 	}
 
 }
