@@ -57,18 +57,6 @@
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpmime</artifactId>
 		    <version>4.1.2</version>
-		    <exclusions>
-		    	<exclusion>
-		    		<!-- >org.slf4j:slf4j-android fulfills this dependency -->
-		    		<groupId>commons-logging</groupId>
-		    		<artifactId>commons-logging</artifactId>
-		    	</exclusion>
-		    	<exclusion>
-		    		<!-- Included in Android -->
-		    		<groupId>org.apache.httpcomponents</groupId>
-		    		<artifactId>httpcore</artifactId>
-		    	</exclusion>
-		    </exclusions>
 		</dependency>
 		<!-- not in Maven
 		installed using:
@@ -83,9 +71,9 @@
 		<!-- end map dependencies -->
 		
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
+		    <groupId>com.integralblue</groupId>
 			<artifactId>httpclient-cache</artifactId>
-			<version>4.2-alpha1</version>
+		    <version>4.2-alpha1</version>
 		</dependency>
 	</dependencies>
 
