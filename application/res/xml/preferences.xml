@@ -25,7 +25,7 @@
                 		android:title="Speak CallerID information aloud"
                 		android:summary="Say the name of the incoming caller"
                 		android:key="tts_enabled"
-                		android:defaultValue="false" />
+                		android:defaultValue="true" />
         </PreferenceCategory>
 		<PreferenceCategory
                 android:title="Lookup source">

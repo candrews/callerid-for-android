@@ -220,7 +220,7 @@ public class CallerIDService extends RoboService {
 			params.gravity |= defaultPopupHorizontalGravity;
 		else
 			params.gravity |= Integer.parseInt(popupHorizontalGravity);
-		ttsEnabled = sharedPreferences.getBoolean("tts_enabled", false);
+		ttsEnabled = sharedPreferences.getBoolean("tts_enabled", true);
 		toastLayout.setVisibility(View.GONE);
 		windowManager.addView(toastLayout, params);
 	}
