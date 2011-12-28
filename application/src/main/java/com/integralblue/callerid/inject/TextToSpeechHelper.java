@@ -33,32 +33,29 @@ public class TextToSpeechHelper {
 	}
 	
 	TextToSpeech textToSpeech;
-	Object startedLock = new Object();
+	final Object startedLock = new Object();
 	boolean started = false;
-	Queue<QueuedSpeak> queuedSpeaks;
+	final Queue<QueuedSpeak> queuedSpeaks = new LinkedList<TextToSpeechHelper.QueuedSpeak>();
 	
 	public void speak(String text, int queueMode, HashMap<String, String> params){
 		synchronized (startedLock) {
 			if(started){
 				textToSpeech.speak(text, queueMode, params);
 			}else{
-				if(queuedSpeaks == null){
-					queuedSpeaks = new LinkedList<TextToSpeechHelper.QueuedSpeak>();
-				}
 				queuedSpeaks.add(new QueuedSpeak(text, queueMode, params));
-				
-				textToSpeech = new TextToSpeech(application,new TextToSpeech.OnInitListener() {
-					@Override
-					public void onInit(int status) {
-						synchronized (startedLock) {
-							started = true;
-							for(QueuedSpeak queuedSpeak : queuedSpeaks){
-								queuedSpeak.run();
+				if(textToSpeech==null){
+					textToSpeech = new TextToSpeech(application,new TextToSpeech.OnInitListener() {
+						@Override
+						public void onInit(int status) {
+							synchronized (startedLock) {
+								started = true;
+								for (QueuedSpeak queuedSpeak; (queuedSpeak = queuedSpeaks.poll()) != null;){
+									queuedSpeak.run();
+								}
 							}
-							queuedSpeaks = null;
 						}
-					}
-				});
+					});
+				}
 			}
 		}
 	}
@@ -67,9 +64,8 @@ public class TextToSpeechHelper {
 		synchronized (startedLock) {
 			if(started){
 				textToSpeech.stop();
-			}else{
-				queuedSpeaks = null;
 			}
+			queuedSpeaks.clear();
 		}
 	}
 	
@@ -78,9 +74,9 @@ public class TextToSpeechHelper {
 			if(started){
 				started = false;
 				textToSpeech.shutdown();
-				textToSpeech = null;
-				queuedSpeaks = null;
 			}
+			textToSpeech = null;
+			queuedSpeaks.clear();
 		}
 	}
 }
