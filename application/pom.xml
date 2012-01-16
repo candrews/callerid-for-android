@@ -137,6 +137,9 @@
 							<sign>
 								<debug>false</debug>
 							</sign>
+							<proguard>
+								<skip>false</skip>
+							</proguard>
 						</configuration>
 					</plugin>
 <!--
