@@ -10,8 +10,8 @@ import android.provider.ContactsContract;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.integralblue.callerid.CallerIDResult;
 import com.integralblue.callerid.CallerIDLookup.NoResultException;
+import com.integralblue.callerid.CallerIDResult;
 
 public class NewContactsHelper implements ContactsHelper {
 	@Inject Application application;
@@ -33,16 +33,15 @@ public class NewContactsHelper implements ContactsHelper {
 		}
 	}
 
-	public void createContactEditor(CallerIDResult result) {
+	public Intent createContactEditor(CallerIDResult result) {
 		final Intent intent = new Intent(Intent.ACTION_INSERT);
 		intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
 		intent.putExtra(ContactsContract.Intents.Insert.NAME, result.getName());
 		intent.putExtra(ContactsContract.Intents.Insert.PHONE, result.getPhoneNumber());
 		if(result.getAddress()!=null) intent.putExtra(ContactsContract.Intents.Insert.POSTAL, result.getAddress());
-		activityProvider.get().startActivity(intent);
+		return intent;
 	}
 
-	@Override
 	public CallerIDResult getContact(String phoneNumber) throws NoResultException {
 		final Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
 		final ContentResolver contentResolver = application.getContentResolver();

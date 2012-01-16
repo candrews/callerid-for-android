@@ -156,7 +156,7 @@ public class LookupActivity extends RoboActivity {
             startActivity(new Intent(Intent.ACTION_CALL,callUri));
 			return true;
 		case R.id.add_contact:
-	    	contactsHelper.createContactEditor(callerIDResult);
+	    	startActivity(contactsHelper.createContactEditor(callerIDResult));
 			return true;
 		case R.id.help:
 			Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse("http://www.integralblue.com/callerid-for-android"));

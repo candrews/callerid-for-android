@@ -37,15 +37,14 @@ public class OldContactsHelper implements ContactsHelper {
 		}
 	}
 
-	public void createContactEditor(CallerIDResult result) {
+	public Intent createContactEditor(CallerIDResult result) {
 	    final Intent intent = new Intent(Contacts.Intents.Insert.ACTION, Contacts.People.CONTENT_URI);
 	    intent.putExtra(Contacts.Intents.Insert.NAME, result.getName());
 	    intent.putExtra(Contacts.Intents.Insert.PHONE, result.getPhoneNumber());
 	    if(result.getAddress()!=null) intent.putExtra(Contacts.Intents.Insert.POSTAL, result.getAddress());
-	    activityProvider.get().startActivity(intent);
+	    return intent;
 	}
 
-	@Override
 	public CallerIDResult getContact(String phoneNumber) throws NoResultException {
 		final Uri uri = Uri.withAppendedPath(Contacts.Phones.CONTENT_FILTER_URL, Uri.encode(phoneNumber));
 		final ContentResolver contentResolver = application.getContentResolver();
