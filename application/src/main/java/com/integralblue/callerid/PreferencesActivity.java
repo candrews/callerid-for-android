@@ -21,7 +21,6 @@ public class PreferencesActivity extends RoboPreferenceActivity implements OnSha
 		addPreferencesFromResource(R.xml.preferences);
 	}
 
-	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if("tts_enabled".equals(key) && sharedPreferences.getBoolean("tts_enabled", true)){
 			//make sure the TTS data has been installed

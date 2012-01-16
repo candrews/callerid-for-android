@@ -9,7 +9,6 @@
 		<version>1.3-SNAPSHOT</version>
 	</parent>
 
-	<groupId>com.integralblue</groupId>
 	<artifactId>callerid</artifactId>
 	<packaging>apk</packaging>
 	<name>callerid - Application</name>
@@ -23,6 +22,12 @@
 			<groupId>org.roboguice</groupId>
 			<artifactId>roboguice</artifactId>
 			<version>2.0b3</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>android.support</groupId>
+			<artifactId>compatibility-v4</artifactId>
+			<version>r4</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -62,9 +67,9 @@
 		<!-- end map dependencies -->
 		
 		<dependency>
-		    <groupId>com.integralblue</groupId>
-			<artifactId>httpclient-cache</artifactId>
-		    <version>4.2-alpha1</version>
+			<groupId>org.springframework.android</groupId>
+			<artifactId>spring-android-rest-template</artifactId>
+			<version>1.0.0.M4</version>
 		</dependency>
 	</dependencies>
 
@@ -98,39 +103,6 @@
 			<id>release</id>
 			<build>
 				<plugins>
-					<plugin>
-						<groupId>com.pyx4me</groupId>
-						<artifactId>proguard-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>process-classes-with-proguard</id>
-								<phase>process-classes</phase>
-								<goals>
-									<goal>proguard</goal>
-								</goals>
-								<configuration>
-									<proguardVersion>4.4</proguardVersion>
-									<maxMemory>256m</maxMemory>
-									<injar>android-classes</injar>
-									<libs>
-										<lib>${rt.jar.path}</lib>
-										<lib>${jsse.jar.path}</lib>
-									</libs>
-									<obfuscate>false</obfuscate>
-									<addMavenDescriptor>false</addMavenDescriptor>
-									<proguardInclude>${project.basedir}/proguard.conf</proguardInclude>
-								</configuration>
-							</execution>
-						</executions>
-						<dependencies>
-							<dependency>
-								<groupId>net.sf.proguard</groupId>
-								<artifactId>proguard</artifactId>
-								<version>4.4</version>
-								<scope>runtime</scope>
-							</dependency>
-						</dependencies>
-					</plugin>
 					<plugin>
 						<artifactId>maven-jarsigner-plugin</artifactId>
 						<executions>

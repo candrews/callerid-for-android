@@ -139,7 +139,6 @@ public class RecentCallsActivity extends RoboListActivity {
              }
              
              callIcon.setOnClickListener(new View.OnClickListener() {
-				@Override
 				public void onClick(View v) {
 	                 Uri callUri;
 	                 if (CallerIDApplication.isUriNumber(phoneNumber)) {
@@ -165,7 +164,6 @@ public class RecentCallsActivity extends RoboListActivity {
 		protected void onInterrupted(Exception e) {
 			super.onInterrupted(e);
 		}
-		@Override
 		public CallerIDResult call() throws Exception {
 			CallerIDResult result;
 			try{
@@ -211,7 +209,6 @@ public class RecentCallsActivity extends RoboListActivity {
 		});
         
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				final Cursor cursor = (Cursor) getListAdapter().getItem(position);

@@ -1,11 +1,14 @@
 package com.integralblue.callerid.inject;
 
-import org.apache.http.client.HttpClient;
+import org.codehaus.jackson.map.DeserializationConfig.Feature;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.web.client.RestTemplate;
 
 import roboguice.inject.SharedPreferencesName;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.google.inject.name.Names;
 import com.integralblue.callerid.CallerIDLookup;
 import com.integralblue.callerid.HttpCallerIDLookup;
 import com.integralblue.callerid.contacts.ContactsHelper;
@@ -21,9 +24,14 @@ public class CallerIDModule extends AbstractModule {
 		bind(CallerIDLookup.class).to(HttpCallerIDLookup.class).in(Scopes.SINGLETON);
 		bind(Geocoder.class).toProvider(GeocoderHelperProvider.class).in(Scopes.SINGLETON);
 		bind(NominatimGeocoder.class).in(Scopes.SINGLETON);
-		bind(HttpClient.class).toProvider(HttpClientProvider.class).in(Scopes.SINGLETON);
 		bind(VersionInformationHelper.class).in(Scopes.SINGLETON);
 		bind(TextToSpeechHelper.class).in(Scopes.SINGLETON);
+		
+		final ObjectMapper jsonObjectMapper = new ObjectMapper();
+		jsonObjectMapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		bind(ObjectMapper.class).annotatedWith(Names.named(("jsonObjectMapper"))).toInstance(jsonObjectMapper);
+		bind(RestTemplate.class).toProvider(RestTemplateProvider.class).in(Scopes.SINGLETON);
+		
 	}
 
 }

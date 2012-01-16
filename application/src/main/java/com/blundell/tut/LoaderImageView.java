@@ -3,22 +3,15 @@ package com.blundell.tut;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+import java.net.URL;
 
 import roboguice.RoboGuice;
 import roboguice.util.Ln;
-
-import com.google.inject.Inject;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.os.Message;
 import android.os.Handler.Callback;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -41,9 +34,6 @@ public class LoaderImageView extends LinearLayout{
 	private ProgressBar mSpinner;
 	private ImageView mImage;
 	private Integer errorResource;
-	
-	@Inject
-	private HttpClient httpClient;
 	
 	/**
 	 * This is used when creating the view in XML
@@ -189,18 +179,11 @@ public class LoaderImageView extends LinearLayout{
 	 * @throws MalformedURLException
 	 */
 	private Drawable getDrawableFromUrl(final String url) throws IOException, MalformedURLException {
-		final HttpGet get = new HttpGet(url);
-		final HttpResponse response = httpClient.execute(get);
-		final HttpEntity entity = response.getEntity();
-		if(entity==null){
-			throw new IllegalStateException("return entity is null. URL: " + url);
-		}else{
-			final InputStream content = entity.getContent();
-			try{
-				return Drawable.createFromStream(content, null);
-			}finally{
-				content.close();
-			}
+		final InputStream inputStream = new URL(url).openStream();
+		try{
+			return Drawable.createFromStream(inputStream, "name");
+		}finally{
+			inputStream.close();
 		}
 	}
 }

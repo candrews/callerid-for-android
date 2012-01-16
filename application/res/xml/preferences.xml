@@ -31,7 +31,7 @@
                 android:title="Lookup source">
 		        <EditTextPreference
 		                android:name="CallerID Lookup URL"
-		                android:summary="{0} is the phone number placeholder"
+		                android:summary="{number} is the phone number placeholder, {agentCountry} is the country your phone is registered in"
 		                android:defaultValue="@string/default_lookup_url"
 		                android:title="Set the URL used to perform Caller ID lookups"
 		                android:key="lookup_url" />

@@ -25,7 +25,6 @@ public class TextToSpeechHelper {
 			this.params = params;
 		}
 
-		@Override
 		public void run() {
 			textToSpeech.speak(text, queueMode, params);
 		}
@@ -45,7 +44,6 @@ public class TextToSpeechHelper {
 				queuedSpeaks.add(new QueuedSpeak(text, queueMode, params));
 				if(textToSpeech==null){
 					textToSpeech = new TextToSpeech(application,new TextToSpeech.OnInitListener() {
-						@Override
 						public void onInit(int status) {
 							synchronized (startedLock) {
 								started = true;

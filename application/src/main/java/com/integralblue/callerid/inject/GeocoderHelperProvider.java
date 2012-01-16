@@ -38,7 +38,7 @@ public class GeocoderHelperProvider implements Provider<Geocoder> {
 				return ret;
 			}
 		} catch (Exception e) {
-			Ln.e(e);
+			Ln.d(e, "falling back to Nominatim geocoder");
 			//ignore the exception - we'll just fall back to our geocoder
 		}
 		return nominatimGeocoder;

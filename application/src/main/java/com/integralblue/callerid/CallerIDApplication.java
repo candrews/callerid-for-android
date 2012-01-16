@@ -34,7 +34,7 @@ public class CallerIDApplication extends Application {
 	        } catch (Exception e) {
                 //The version of Android we're on doesn't have android.os.StrictMode
                 //so ignore this exception
-	        	Ln.e(e);
+	        	Ln.d(e, "Strict mode not available");
 	        }
 		}
 	}

@@ -1,13 +1,10 @@
 package com.integralblue.callerid;
 
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import roboguice.service.RoboService;
-import roboguice.util.Strings;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;

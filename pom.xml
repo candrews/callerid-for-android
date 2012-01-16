@@ -21,7 +21,6 @@
   <modules>
     <module>application</module>
     <module>application-it</module>
-    <module>httpclient-cache</module>
   </modules>
 
   <properties>
@@ -47,18 +46,6 @@
         <version>2.3.3</version>
         <scope>provided</scope>
       </dependency>
-	  <dependency>
-	    <groupId>org.apache.httpcomponents</groupId>
-	    <artifactId>httpclient</artifactId>
-	    <version>4.0.1</version>
-	    <scope>provided</scope>
-	  </dependency>
-	  <dependency>
-	    <groupId>org.apache.httpcomponents</groupId>
-	    <artifactId>httpcore</artifactId>
-	    <version>4.0.1</version>
-	    <scope>provided</scope>
-	  </dependency>
 	  <dependency>
 	    <groupId>commons-logging</groupId>
 	    <artifactId>commons-logging</artifactId>
@@ -314,5 +301,15 @@
 	          	<enabled>true</enabled>
 	      	</snapshots>
 	  	</repository>
+	  	<repository>
+		    <id>spring-milestone</id>
+		    <name>Spring Maven MILESTONE Repository</name>
+		    <url>http://maven.springframework.org/milestone</url>
+		</repository>
+	  	<repository>
+		    <id>android-rome-feed-reader-repository</id>
+		    <name>Android ROME Feed Reader Repository</name>
+		    <url>https://android-rome-feed-reader.googlecode.com/svn/maven2/releases/</url>
+		</repository>
   </repositories>
 </project>
