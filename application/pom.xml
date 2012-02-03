@@ -15,7 +15,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>android</groupId>
+			<groupId>com.google.android</groupId>
 			<artifactId>android</artifactId>
 		</dependency>
 		<dependency>
@@ -42,29 +42,11 @@
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.9.2</version>
         </dependency>
-		<!-- begin map dependencies -->
-		<!-- required by org.osmdroid.osmdroid -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-android</artifactId>
-			<version>1.6.1-RC1</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.apache.httpcomponents</groupId>
-		    <artifactId>httpmime</artifactId>
-		    <version>4.1.2</version>
-		</dependency>
-		<!-- not in Maven
-		installed using:
-		wget http://osmdroid.googlecode.com/files/osmdroid-android-3.0.4.jar
-		mvn install:install-file -DgroupId=org.osmdroid -DartifactId=osmdroid -Dversion=3.0.4 -Dpackaging=jar -Dfile=osmdroid-android-3.0.4.jar
-		 -->
 		<dependency>
 			<groupId>org.osmdroid</groupId>
-			<artifactId>osmdroid</artifactId>
-			<version>3.0.5</version>
+			<artifactId>osmdroid-android</artifactId>
+			<version>3.0.7</version>
 		</dependency>
-		<!-- end map dependencies -->
 		
 		<dependency>
 			<groupId>org.springframework.android</groupId>
