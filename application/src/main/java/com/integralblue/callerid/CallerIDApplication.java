@@ -60,7 +60,12 @@ public class CallerIDApplication extends Application {
                 .getMethod("install", File.class, long.class)
                 .invoke(null, httpCacheDir, httpCacheSize);
         } catch (Exception httpResponseCacheNotAvailable) {
-            Ln.d(httpResponseCacheNotAvailable, "android.net.http.HttpResponseCache not available, probably because we're running on a pre-ICS version of Android.");
+            Ln.d(httpResponseCacheNotAvailable, "android.net.http.HttpResponseCache not available, probably because we're running on a pre-ICS version of Android. Using com.integralblue.httpresponsecache.HttpResponseCache.");
+            try{
+            	com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
+            }catch(Exception e){
+            	Ln.e(e, "Failed to set up com.integralblue.httpresponsecache.HttpResponseCache");
+            }
         }
     }
 
