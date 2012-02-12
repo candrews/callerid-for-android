@@ -284,24 +284,6 @@
 			</snapshots>
 		</repository>
 	  	<repository>
-	  		<id>repo</id>
-	  		<url>https://repo.molecular.com/artifactory/repo</url>
-	  		<snapshots>
-	  			<enabled>true</enabled>
-	  		</snapshots>
-	  	</repository>
-  	  	<repository>
-	      	<id>apache.staging</id>
-	      	<name>Apache Staging Repository</name>
-	      	<url>https://repository.apache.org/content/groups/staging/</url>
-	      	<releases>
-	        	<enabled>true</enabled>
-	      	</releases>
-	      	<snapshots>
-	          	<enabled>true</enabled>
-	      	</snapshots>
-	  	</repository>
-	  	<repository>
 		    <id>spring-milestone</id>
 		    <name>Spring Maven MILESTONE Repository</name>
 		    <url>http://maven.springframework.org/milestone</url>
