@@ -8,6 +8,10 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -186,7 +190,17 @@ public class NominatimGeocoder implements Geocoder
 		urlVariables.put("maxResults", Integer.toString(maxResults));
 		
 		try{
-			final Place[] places = restTemplate.getForObject("http://nominatim.openstreetmap.org/search?q={location}&format=json&addressdetails=1&limit={maxResults}", Place[].class, urlVariables);
+			// Nominatim does not handle the HTTP request header "Accept" according to RFC.
+			// If any Accept header other than */* is sent, Nominatim responses with HTTP 406 (Not Acceptable).
+			// So instead of the rather simple line:
+			// final Place[] places = restTemplate.getForObject("http://nominatim.openstreetmap.org/search?q={location}&format=json&addressdetails=1&limit={maxResults}", Place[].class, urlVariables);
+			// we have to manually set the Accept header and make things a bit more complicated.
+			
+			final HttpHeaders requestHeaders = new HttpHeaders();
+			requestHeaders.set("Accept", "*/*");
+			final HttpEntity<?> requestEntity = new HttpEntity(requestHeaders);
+			final ResponseEntity<Place[]> responseEntity = restTemplate.exchange("http://nominatim.openstreetmap.org/search?q={location}&format=json&addressdetails=1&limit={maxResults}",HttpMethod.GET, requestEntity, Place[].class, urlVariables);
+			final Place[] places = responseEntity.getBody();
         	return parseResponse(places);
 		}catch(RestClientException e){
 			Ln.e(e);
