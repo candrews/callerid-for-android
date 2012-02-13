@@ -141,6 +141,9 @@
 							<proguard>
 								<skip>false</skip>
 							</proguard>
+							<dex>
+								<noLocals>true</noLocals>
+							</dex>
 						</configuration>
 					</plugin>
 <!--
