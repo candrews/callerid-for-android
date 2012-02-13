@@ -9,8 +9,8 @@ On <application> the attributes would be:
 android:debuggable="${android.debuggable}"
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.integralblue.callerid" android:versionCode="4"
-	android:installLocation="internalOnly" android:versionName="1.3">
+	package="com.integralblue.callerid" android:versionCode="5"
+	android:installLocation="internalOnly" android:versionName="1.4">
 	<!-- android:installLocation="internalOnly" because this application revolves 
 		around a service which would not work (and would not be restarted) if the 
 		application was to be installed on external storage and the storage unmounted -->
