@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>org.springframework.android</groupId>
 			<artifactId>spring-android-rest-template</artifactId>
-			<version>1.0.0.M4</version>
+			<version>1.0.0.RC1</version>
 		</dependency>
 	</dependencies>
 
@@ -140,6 +140,7 @@
 							</sign>
 							<proguard>
 								<skip>false</skip>
+								<proguardJarPath>/home/candrews/Desktop/proguard.jar</proguardJarPath>
 							</proguard>
 							<dex>
 								<noLocals>true</noLocals>
