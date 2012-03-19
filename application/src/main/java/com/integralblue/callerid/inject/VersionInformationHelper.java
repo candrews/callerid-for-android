@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.widget.Toast;
 
@@ -117,7 +119,19 @@ public class VersionInformationHelper {
 	 * @return
 	 */
 	public String getApplicationSignatureMD5(){
-		return md5(packageInfo.signatures[0].toByteArray());
+		// The packageInfo member variable was not retrieved with the GET_SIGNATURES flag
+		// So we need to get a different pacakgeInfo
+		final PackageInfo packageInfo;
+		try {
+			packageInfo = application.getPackageManager().getPackageInfo(application.getPackageName(),PackageManager.GET_SIGNATURES);
+		} catch (NameNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		if(packageInfo.signatures!=null && packageInfo.signatures.length>0 && packageInfo.signatures[0]!=null){
+			return md5(packageInfo.signatures[0].toByteArray());
+		}else{
+			return null;
+		}
 	}
 	
     private static String md5(byte[] s) {
