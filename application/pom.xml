@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>org.springframework.android</groupId>
 			<artifactId>spring-android-rest-template</artifactId>
-			<version>1.0.0.RC1</version>
+			<version>1.0.0.RELEASE</version>
 		</dependency>
 	</dependencies>
 
