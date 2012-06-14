@@ -11,11 +11,20 @@
 		android:text="@string/perform_lookup_label"
 		android:layout_width="fill_parent">
 	</Button>
-	<Button android:id="@+id/create_contact"  android:visibility="gone"
-		android:layout_height="wrap_content"
-		android:text="@string/create_contact"
-		android:layout_width="fill_parent">
-	</Button>
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="horizontal"
+		android:layout_width="fill_parent" android:layout_height="wrap_content">
+		<ImageButton android:id="@+id/create_contact"  android:visibility="gone"
+			android:layout_height="wrap_content"
+			android:src="@drawable/create_contact"
+			android:contentDescription="@string/create_contact"
+			android:layout_width="wrap_content" />
+		<ImageButton android:id="@+id/call" android:visibility="gone"
+			android:layout_height="wrap_content"
+			android:src="@drawable/call"
+			android:contentDescription="@string/call"
+			android:layout_width="wrap_content" />
+	</LinearLayout>	
 	<include
 		layout="@layout/toast"
 		android:layout_weight="1" />

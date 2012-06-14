@@ -1,10 +1,9 @@
 package com.integralblue.callerid;
 
-import roboguice.activity.RoboListActivity;
+import roboguice.fragment.RoboListFragment;
 import roboguice.inject.InjectResource;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,21 +12,23 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.CallLog.Calls;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.ResourceCursorAdapter;
 import android.telephony.PhoneNumberUtils;
 import android.text.format.DateUtils;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ResourceCursorAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
 import com.integralblue.callerid.CallerIDLookup.NoResultException;
 import com.integralblue.callerid.contacts.ContactsHelper;
-import com.integralblue.callerid.inject.VersionInformationHelper;
 
-public class RecentCallsActivity extends RoboListActivity {
-	@Inject VersionInformationHelper versionInformationHelper;
+public class RecentCallsFragment extends RoboListFragment {
 	@Inject ContactsHelper contactsHelper;
 	@Inject CallerIDLookup callerIDLookup;
 	
@@ -46,7 +47,7 @@ public class RecentCallsActivity extends RoboListActivity {
 	@InjectResource(R.string.lookup_in_progress)
 	String lookupInProgress;
 	
-	private static final int NEWER_VERSION_AVAILABLE_DIALOG = 1;
+	private static final int CALL_LOG_LOADER = 1;
 	
     static final int ID_COLUMN_INDEX = 0;
     static final int NUMBER_COLUMN_INDEX = 1;
@@ -102,11 +103,6 @@ public class RecentCallsActivity extends RoboListActivity {
 				throws Exception {
 			super.onSuccess(result);
 			
-			if (!promptedForNewVersion && versionInformationHelper.shouldPromptForNewVersion()) {
-				promptedForNewVersion = true;
-				showDialog(NEWER_VERSION_AVAILABLE_DIALOG);
-			}
-			
 			line1View.setText(result.getName());
 			labelView.setText("");
 		}
@@ -160,10 +156,6 @@ public class RecentCallsActivity extends RoboListActivity {
 			}
 			labelView.setText("");
 		}
-		@Override
-		protected void onInterrupted(Exception e) {
-			super.onInterrupted(e);
-		}
 		public CallerIDResult call() throws Exception {
 			CallerIDResult result;
 			try{
@@ -172,11 +164,6 @@ public class RecentCallsActivity extends RoboListActivity {
 				// not a phone number in the local contacts database, so time to query the web service
 				
 				result = callerIDLookup.lookup(phoneNumber);
-				
-				if(result.getLatestAndroidVersionCode()!=null){
-					//got version info from the server
-					versionInformationHelper.setLatestVersionCode(result.getLatestAndroidVersionCode());
-				}
 			}
 			
 			return result;
@@ -184,48 +171,52 @@ public class RecentCallsActivity extends RoboListActivity {
 	}
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-         
-        final Cursor callLogCursor = getContentResolver().query(
-                android.provider.CallLog.Calls.CONTENT_URI,
-                CALL_LOG_PROJECTION,
-                null,
-                null,
-                ORDER
-                );
-        startManagingCursor(callLogCursor);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         
-        setListAdapter(new ResourceCursorAdapter(this,R.layout.recent_calls_list_item, callLogCursor) {
+        
+        final ResourceCursorAdapter adapter = new ResourceCursorAdapter(getActivity().getApplicationContext(),R.layout.recent_calls_list_item, null, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER) {
 			@Override
 			public void bindView(View view, Context context, Cursor cursor) {
 				new RecentCallsLookupAsyncTask(
-						RecentCallsActivity.this,
+						getActivity(),
 						view,
 						cursor.getString(NUMBER_COLUMN_INDEX),
 						cursor.getLong(DATE_COLUMN_INDEX),
 						cursor.getInt(CALL_TYPE_COLUMN_INDEX)).execute();
 			}
-		});
+		};
+		
+		setListAdapter(adapter);
         
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				final Cursor cursor = (Cursor) getListAdapter().getItem(position);
-				final Intent lookupIntent = new Intent(getApplicationContext(), MainActivity.class);
-				lookupIntent.putExtra("phoneNumber", cursor.getString(NUMBER_COLUMN_INDEX));
-				startActivity(lookupIntent);
+        getLoaderManager().initLoader(CALL_LOG_LOADER, null, new LoaderManager.LoaderCallbacks<Cursor>(){
+
+			public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+				return new CursorLoader(getActivity(),
+						android.provider.CallLog.Calls.CONTENT_URI, CALL_LOG_PROJECTION, null, null, ORDER);
 			}
-		});
+
+			public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+				adapter.swapCursor(data);
+			}
+
+			public void onLoaderReset(Loader<Cursor> loader) {
+				adapter.swapCursor(null);
+			}
+        	
+        });
     }
 
 	@Override
-	protected Dialog onCreateDialog(int id) {
-		switch (id) {
-			case NEWER_VERSION_AVAILABLE_DIALOG:
-				versionInformationHelper.createNewVersionDialog(this);
-			default:
-				return super.onCreateDialog(id);
-		}
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		// TODO Auto-generated method stub
+		super.onListItemClick(l, v, position, id);
+		
+		final Cursor cursor = (Cursor) getListAdapter().getItem(position);
+		final Intent lookupIntent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
+		lookupIntent.putExtra("phoneNumber", cursor.getString(NUMBER_COLUMN_INDEX));
+		startActivity(lookupIntent);
 	}
+    
+    
 }

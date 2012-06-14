@@ -11,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
-import com.integralblue.callerid.ExposedObjectMapperMappingJacksonHttpMessageConverter;
 
 
 public class RestTemplateProvider implements Provider<RestTemplate> {
@@ -30,7 +29,7 @@ public class RestTemplateProvider implements Provider<RestTemplate> {
 		}
 		
 		//handle json data
-		final MappingJacksonHttpMessageConverter jsonConverter = new ExposedObjectMapperMappingJacksonHttpMessageConverter();
+		final MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
 		jsonConverter.setObjectMapper(jsonObjectMapper);
 		restTemplate.getMessageConverters().add(0,jsonConverter);
 		

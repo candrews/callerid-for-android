@@ -39,11 +39,6 @@ android:debuggable="${android.debuggable}"
 			</intent-filter>
 		</activity>
 
-		<activity android:name=".LookupActivity" android:label="Lookup" android:launchMode="singleTask">
-		</activity>
-		<activity android:name=".RecentCallsActivity" android:label="Recent Calls" android:launchMode="singleTask">
-		</activity>
-
 		<activity android:name=".PreferencesActivity" android:label="Settings" android:launchMode="singleInstance">
 		</activity>
 

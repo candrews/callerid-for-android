@@ -7,8 +7,9 @@
     <string name="app_description">The CallerID app uses a web service to look up CallerID information when a call is received from a number not in the address book.</string>
     <string name="lookup_error">Error performing lookup</string>
     <string name="lookup_no_result">No data available</string>
-    <string name="lookup_in_progress">Please wait...</string>
+    <string name="lookup_in_progress">Please wait…</string>
     <string name="create_contact">Add Contact</string>
+    <string name="call">Call</string>
     
     <string name="default_lookup_url"><![CDATA[http://callerid.integralblue.com/callerid.php?format=json&num={number}&country={agentCountry}]]></string>
     
@@ -32,6 +33,4 @@
     
     <string name="incoming_call_tts">Call from %s</string>
     <string name="incoming_call_tts_unknown">Call from unknown number</string>
-    
-    <string name="tts_initialization_error">Failed to initialize the TTS engine</string>
 </resources>
