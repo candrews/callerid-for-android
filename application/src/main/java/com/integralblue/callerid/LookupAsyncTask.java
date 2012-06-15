@@ -1,5 +1,7 @@
 package com.integralblue.callerid;
 
+import java.util.Locale;
+
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
@@ -13,10 +15,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.blundell.tut.LoaderImageView;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+import com.google.i18n.phonenumbers.geocoding.PhoneNumberOfflineGeocoder;
 import com.google.inject.Inject;
+import com.integralblue.callerid.inject.CountryDetector;
 import com.integralblue.callerid.inject.VersionInformationHelper;
 
 public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
+	
+	String offlineGeocoderResult = null;
 	
 	@Inject CallerIDApplication callerIDApplication;
 	
@@ -46,6 +55,9 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	
 	@Inject
 	VersionInformationHelper versionInformationHelper;
+	
+	@Inject
+	CountryDetector countryDetector;
 
 	public LookupAsyncTask(Context context, CharSequence phoneNumber, ViewGroup layout, boolean showMap) {
 		super(context);
@@ -79,7 +91,20 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 		if(layout.findViewById(R.id.map_view)!=null) layout.findViewById(R.id.map_view).setVisibility(View.GONE);
 		image.setVisibility(View.VISIBLE);
 		text.setVisibility(View.VISIBLE);
-		text.setText(lookupInProgress);
+		
+		final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+		try{
+			final PhoneNumber phoneNumberPhoneNumber = phoneNumberUtil.parse(phoneNumber.toString(), countryDetector.getCountry());
+			final PhoneNumberOfflineGeocoder phoneNumberOfflineGeocoder = PhoneNumberOfflineGeocoder.getInstance();
+			offlineGeocoderResult = phoneNumberOfflineGeocoder.getDescriptionForNumber(phoneNumberPhoneNumber, Locale.getDefault());
+		}catch(NumberParseException e){
+			//ignore this exception
+		}
+		if("".equals(offlineGeocoderResult)) offlineGeocoderResult = null;
+		if(offlineGeocoderResult == null)
+			text.setText(lookupInProgress);
+		else
+			text.setText(offlineGeocoderResult);
 		image.spin();
 	}
 
@@ -125,10 +150,16 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	@Override
 	protected void onException(Exception e) throws RuntimeException {
 		if (e instanceof CallerIDLookup.NoResultException) {
-			text.setText(lookupNoResult);
+			if(offlineGeocoderResult == null)
+				text.setText(lookupNoResult);
+			//else
+				// We're already displaying the offline geolocation results... so just leave that there.
 		} else {
 			Ln.e(e);
-			text.setText(lookupError);
+			if(offlineGeocoderResult == null)
+				text.setText(lookupError);
+			//else
+				// We're already displaying the offline geolocation results... so just leave that there.
 		}
 		address.setVisibility(View.GONE);
 		if(layout.findViewById(R.id.map_view)!=null) layout.findViewById(R.id.map_view).setVisibility(View.GONE);

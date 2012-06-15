@@ -26,6 +26,7 @@ public class CallerIDModule extends AbstractModule {
 		bind(NominatimGeocoder.class).in(Scopes.SINGLETON);
 		bind(VersionInformationHelper.class).in(Scopes.SINGLETON);
 		bind(TextToSpeechHelper.class).in(Scopes.SINGLETON);
+		bind(CountryDetector.class).in(Scopes.SINGLETON);
 		
 		final ObjectMapper jsonObjectMapper = new ObjectMapper();
 		jsonObjectMapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);

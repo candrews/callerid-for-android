@@ -10,24 +10,18 @@ import org.springframework.web.client.RestTemplate;
 
 import roboguice.inject.InjectResource;
 import android.content.SharedPreferences;
-import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 
 import com.google.inject.Inject;
+import com.integralblue.callerid.inject.CountryDetector;
 
 public class HttpCallerIDLookup implements CallerIDLookup {
 	@Inject SharedPreferences sharedPreferences;
 	@InjectResource(R.string.default_lookup_url) String defaultLookupUrl;
 	@Inject RestTemplate restTemplate;
 	
-	@Inject TelephonyManager telephonyManager;
+	@Inject CountryDetector countryDetector;
 
 	public CallerIDResult lookup(final CharSequence phoneNumber) throws NoResultException {
-		//use the network's country if it's available (as I figure that's probably the best? I'm just guessing)
-		//if the network's country isn't available, using the SIM's
-		//I have no idea how or if this works on CDMA networks
-		//(Android documentation warns that these function may not work as expected with CDMA)
-		final String agentCountry = TextUtils.isEmpty(telephonyManager.getNetworkCountryIso())?telephonyManager.getNetworkCountryIso():telephonyManager.getSimCountryIso();
 		
 		final String beforeSubstitutionLookupUrl = sharedPreferences.getString("lookup_url", defaultLookupUrl);
 		final String url;
@@ -39,7 +33,7 @@ public class HttpCallerIDLookup implements CallerIDLookup {
 		}
 		final Map<String, String> urlVariables = new HashMap<String, String>();
 		urlVariables.put("number", phoneNumber.toString());
-		urlVariables.put("agentCountry", agentCountry);
+		urlVariables.put("agentCountry", countryDetector.getCountry());
 		try{
 			return restTemplate.getForObject(url, CallerIDResult.class, urlVariables);
 		}catch(HttpClientErrorException e){
