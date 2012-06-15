@@ -149,17 +149,32 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 
 	@Override
 	protected void onException(Exception e) throws RuntimeException {
+		// since we're about to start a new lookup,
+		// we want to cancel any lookups in progress
+		if (geocoderAsyncTask != null)
+			geocoderAsyncTask.cancel(true);
+		
 		if (e instanceof CallerIDLookup.NoResultException) {
-			if(offlineGeocoderResult == null)
+			if(offlineGeocoderResult == null){
 				text.setText(lookupNoResult);
-			//else
+			}else{
 				// We're already displaying the offline geolocation results... so just leave that there.
+				if(showMap){
+					geocoderAsyncTask = new GeocoderAsyncTask(getContext(),offlineGeocoderResult,layout);
+					geocoderAsyncTask.execute();
+				}
+			}
 		} else {
 			Ln.e(e);
-			if(offlineGeocoderResult == null)
+			if(offlineGeocoderResult == null){
 				text.setText(lookupError);
-			//else
+			}else{
 				// We're already displaying the offline geolocation results... so just leave that there.
+				if(showMap){
+					geocoderAsyncTask = new GeocoderAsyncTask(getContext(),offlineGeocoderResult,layout);
+					geocoderAsyncTask.execute();
+				}
+			}
 		}
 		address.setVisibility(View.GONE);
 		if(layout.findViewById(R.id.map_view)!=null) layout.findViewById(R.id.map_view).setVisibility(View.GONE);
