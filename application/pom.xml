@@ -147,7 +147,6 @@
 							</sign>
 							<proguard>
 								<skip>false</skip>
-								<proguardJarPath>/home/candrews/Desktop/proguard.jar</proguardJarPath>
 							</proguard>
 							<dex>
 								<noLocals>true</noLocals>
