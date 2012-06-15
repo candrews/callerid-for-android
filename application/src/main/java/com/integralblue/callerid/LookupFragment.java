@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,6 +75,8 @@ public class LookupFragment extends RoboFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		
+		phoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         
         performLookup.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
