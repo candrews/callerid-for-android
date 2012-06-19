@@ -100,13 +100,13 @@ public class CallerIDService extends RoboService {
 		protected void onPreExecute() throws Exception {
 			super.onPreExecute();
 			toastLayout.setVisibility(View.VISIBLE);
-			previousCallerID = null;
+			previousCallerID = offlineGeocoderResult;
 		}
 		@Override
 		protected void onException(Exception e) throws RuntimeException {
 			super.onException(e);
 			toastLayout.setVisibility(View.VISIBLE);
-			previousCallerID = null;
+			previousCallerID = offlineGeocoderResult;
 			if (e instanceof CallerIDLookup.NoResultException) {
 				if(offlineGeocoderResult == null)
 					textToSpeechHelper.speak(getString(R.string.incoming_call_tts_unknown), TextToSpeech.QUEUE_FLUSH, ttsParametersMap);
