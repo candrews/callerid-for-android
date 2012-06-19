@@ -1,5 +1,7 @@
 package com.integralblue.callerid;
 
+import java.util.Locale;
+
 import roboguice.fragment.RoboListFragment;
 import roboguice.inject.InjectResource;
 import roboguice.util.Ln;
@@ -24,13 +26,20 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+import com.google.i18n.phonenumbers.geocoding.PhoneNumberOfflineGeocoder;
 import com.google.inject.Inject;
 import com.integralblue.callerid.CallerIDLookup.NoResultException;
 import com.integralblue.callerid.contacts.ContactsHelper;
+import com.integralblue.callerid.inject.CountryDetector;
 
 public class RecentCallsFragment extends RoboListFragment {
 	@Inject ContactsHelper contactsHelper;
 	@Inject CallerIDLookup callerIDLookup;
+	@Inject
+	CountryDetector countryDetector;
 	
 	@InjectResource(R.drawable.ic_call_log_list_incoming_call)
     Drawable drawableIncoming;
@@ -84,6 +93,7 @@ public class RecentCallsFragment extends RoboListFragment {
 		final TextView line1View;
 		final int callType;
 		final long date;
+		String offlineGeocoderResult = null;
 		
 		public RecentCallsLookupAsyncTask(Context context, View view, String phoneNumber, long date, int callType) {
 			super(context, new Handler(context.getMainLooper()));
@@ -117,9 +127,24 @@ public class RecentCallsFragment extends RoboListFragment {
 							System.currentTimeMillis(), 
 							DateUtils.MINUTE_IN_MILLIS, 
 							DateUtils.FORMAT_ABBREV_RELATIVE));
-			labelView.setText(lookupInProgress);
 			numberView.setText(PhoneNumberUtils.formatNumber(phoneNumber));
-			line1View.setText("");
+			
+			final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+			try{
+				final PhoneNumber phoneNumberPhoneNumber = phoneNumberUtil.parse(phoneNumber.toString(), countryDetector.getCountry());
+				final PhoneNumberOfflineGeocoder phoneNumberOfflineGeocoder = PhoneNumberOfflineGeocoder.getInstance();
+				offlineGeocoderResult = phoneNumberOfflineGeocoder.getDescriptionForNumber(phoneNumberPhoneNumber, Locale.getDefault());
+			}catch(NumberParseException e){
+				//ignore this exception
+			}
+			if("".equals(offlineGeocoderResult)) offlineGeocoderResult = null;
+			if(offlineGeocoderResult == null){
+				labelView.setText(lookupInProgress);
+				line1View.setText("");
+			}else{
+				line1View.setText(offlineGeocoderResult);
+				labelView.setText("");
+			}
 			
              // Set the icon
              switch (callType) {
@@ -149,10 +174,18 @@ public class RecentCallsFragment extends RoboListFragment {
 		@Override
 		protected void onException(Exception e) throws RuntimeException {
 			if (e instanceof CallerIDLookup.NoResultException) {
-				line1View.setText(lookupNoResult);
+				if(offlineGeocoderResult == null){
+					line1View.setText(lookupNoResult);
+				}else{
+					// We're already displaying the offline geolocation results... so just leave that there.
+				}
 			} else {
 				Ln.e(e);
-				line1View.setText(lookupError);
+				if(offlineGeocoderResult == null){
+					line1View.setText(lookupError);
+				}else{
+					// We're already displaying the offline geolocation results... so just leave that there.
+				}
 			}
 			labelView.setText("");
 		}
