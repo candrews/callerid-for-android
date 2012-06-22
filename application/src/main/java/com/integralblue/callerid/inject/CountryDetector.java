@@ -22,6 +22,7 @@ public class CountryDetector {
         if (result == null) {
             result = getLocaleCountry();
         }
+        if(result!=null) result = result.toUpperCase(); //ISO country codes are always uppercase
         return result;
 	}
 	
