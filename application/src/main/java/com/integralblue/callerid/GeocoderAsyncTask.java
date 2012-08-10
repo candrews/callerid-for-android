@@ -29,6 +29,20 @@ public class GeocoderAsyncTask extends RoboAsyncTask<Address> {
 		this.locationName = locationName;
 		this.layout = layout;
 	}
+	
+	/**
+     * Returns <tt>true</tt> if this task was cancelled before it completed
+     * normally.
+     *
+     * Request to add this to Roboguice: https://code.google.com/p/roboguice/issues/detail?id=210
+     *
+     * @return <tt>true</tt> if task was cancelled before it completed
+     *
+     * @see #cancel(boolean)
+     */
+	public boolean isCancelled(){
+		return future == null ? false : future.isCancelled();
+	}
 
 	public Address call() throws Exception {
 		List<Address> addresses = geocoder.getFromLocationName(locationName, 1);
@@ -42,6 +56,7 @@ public class GeocoderAsyncTask extends RoboAsyncTask<Address> {
 	@Override
 	protected void onSuccess(final Address address)
 			throws Exception {
+		if(isCancelled()) return; //don't do any UI things if the task was cancelled
 		MapView mapView = (MapView) layout.findViewById(R.id.map_view);
 		if(address == null){
 			if(mapView!=null) mapView.setVisibility(View.GONE);
@@ -65,7 +80,8 @@ public class GeocoderAsyncTask extends RoboAsyncTask<Address> {
 
 	@Override
 	protected void onInterrupted(final Exception e) {
-		super.onInterrupted(e);
+		// intentionally not calling the super, as that calls onException(e), and that's not what we want
+		// super.onInterrupted(e);
 		if(layout.findViewById(R.id.map_view)!=null) layout.findViewById(R.id.map_view).setVisibility(View.GONE);
 	}
 }

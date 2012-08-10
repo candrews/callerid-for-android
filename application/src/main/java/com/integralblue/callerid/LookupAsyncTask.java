@@ -83,6 +83,20 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 		
 		return result;
 	}
+	
+	/**
+     * Returns <tt>true</tt> if this task was cancelled before it completed
+     * normally.
+     *
+     * Request to add this to Roboguice: https://code.google.com/p/roboguice/issues/detail?id=210
+     *
+     * @return <tt>true</tt> if task was cancelled before it completed
+     *
+     * @see #cancel(boolean)
+     */
+	public boolean isCancelled(){
+		return future == null ? false : future.isCancelled();
+	}
 
 	@Override
 	protected void onPreExecute() throws Exception {
@@ -112,6 +126,11 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 	protected void onSuccess(CallerIDResult result)
 			throws Exception {
 		super.onSuccess(result);
+		// since we're about to start a new lookup,
+		// we want to cancel any lookups in progress
+		if (geocoderAsyncTask != null)
+			geocoderAsyncTask.cancel(true);
+		if(isCancelled()) return; //don't do any UI things if the task was cancelled
 		
 		if(result.getAddress()==null){
 			address.setVisibility(View.GONE);
@@ -122,10 +141,6 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 				address.setVisibility(View.GONE);
 			else
 				address.setVisibility(View.VISIBLE);
-			// since we're about to start a new lookup,
-			// we want to cancel any lookups in progress
-			if (geocoderAsyncTask != null)
-				geocoderAsyncTask.cancel(true);
 			MapView mapView = (MapView) layout.findViewById(R.id.map_view);
 			if(showMap){
 				if(result.getLatitude()!=null && result.getLongitude()!=null){
@@ -153,6 +168,8 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 		// we want to cancel any lookups in progress
 		if (geocoderAsyncTask != null)
 			geocoderAsyncTask.cancel(true);
+
+		if(isCancelled()) return; //don't do any UI things if the task was cancelled
 		
 		if (e instanceof CallerIDLookup.NoResultException) {
 			if(offlineGeocoderResult == null){
@@ -183,7 +200,13 @@ public class LookupAsyncTask extends RoboAsyncTask<CallerIDResult> {
 
 	@Override
 	protected void onInterrupted(Exception e) {
-		super.onInterrupted(e);
+		// intentionally not calling the super, as that calls onException(e), and that's not what we want
+		// super.onInterrupted(e);
+
+		// if there's a geocoder lookup in progress, we should cancel that, too
+		if (geocoderAsyncTask != null)
+			geocoderAsyncTask.cancel(true);
+		
 		address.setVisibility(View.GONE);
 		if(layout.findViewById(R.id.map_view)!=null) layout.findViewById(R.id.map_view).setVisibility(View.GONE);
 		image.setVisibility(View.GONE);

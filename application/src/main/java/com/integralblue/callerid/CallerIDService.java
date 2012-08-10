@@ -85,8 +85,9 @@ public class CallerIDService extends RoboService {
 		protected void onSuccess(final CallerIDResult result)
 				throws Exception {
 			super.onSuccess(result);
-			toastLayout.setVisibility(View.VISIBLE);
 			previousCallerID = result.getName();
+			if(isCancelled()) return; //don't do any UI/TTS things if the task was cancelled
+			toastLayout.setVisibility(View.VISIBLE);
 			
 			if(versionInformationHelper.shouldPromptForNewVersion()){
 				Toast.makeText(CallerIDService.this, R.string.new_version_dialog_title, Toast.LENGTH_LONG).show();
@@ -105,8 +106,9 @@ public class CallerIDService extends RoboService {
 		@Override
 		protected void onException(Exception e) throws RuntimeException {
 			super.onException(e);
-			toastLayout.setVisibility(View.VISIBLE);
 			previousCallerID = offlineGeocoderResult;
+			if(isCancelled()) return; //don't do any UI/TTS things if the task was cancelled
+			toastLayout.setVisibility(View.VISIBLE);
 			if (e instanceof CallerIDLookup.NoResultException) {
 				if(offlineGeocoderResult == null)
 					textToSpeechHelper.speak(getString(R.string.incoming_call_tts_unknown), TextToSpeech.QUEUE_FLUSH, ttsParametersMap);
