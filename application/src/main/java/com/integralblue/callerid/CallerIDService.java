@@ -16,6 +16,7 @@ import android.media.AudioManager;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -152,17 +153,28 @@ public class CallerIDService extends RoboService {
 			currentLookupAsyncTask.cancel(true);
 
 		if (TelephonyManager.EXTRA_STATE_RINGING.equals(phoneState)) {
-			try{
-				CallerIDResult result = contactsHelper.getContact(phoneNumber);
+			if(TextUtils.isEmpty(phoneNumber) || SpecialPhoneNumbers.UNKNOWN_NUMBER.equals(phoneNumber)){
 				toastLayout.setVisibility(View.GONE);
-				//speak the contact's name even when we don't need to use the CallerID service to get information
-				
-				if(ttsEnabled && result.getName()!=null && result.getName()!=""){
-					textToSpeechHelper.speak(getString(R.string.incoming_call_tts, result.getName()), TextToSpeech.QUEUE_FLUSH, ttsParametersMap);
+				textToSpeechHelper.speak(getString(R.string.incoming_call_tts_unknown), TextToSpeech.QUEUE_FLUSH, ttsParametersMap);
+			}else if(SpecialPhoneNumbers.PRIVATE_NUMBER.equals(phoneNumber)){
+				toastLayout.setVisibility(View.GONE);
+				textToSpeechHelper.speak(getString(R.string.incoming_call_tts_private), TextToSpeech.QUEUE_FLUSH, ttsParametersMap);
+			}else if(SpecialPhoneNumbers.PAYPHONE_NUMBER.equals(phoneNumber)){
+				toastLayout.setVisibility(View.GONE);
+				textToSpeechHelper.speak(getString(R.string.incoming_call_tts_payphone), TextToSpeech.QUEUE_FLUSH, ttsParametersMap);
+			}else{
+				try{
+					CallerIDResult result = contactsHelper.getContact(phoneNumber);
+					toastLayout.setVisibility(View.GONE);
+					//speak the contact's name even when we don't need to use the CallerID service to get information
+					
+					if(ttsEnabled && result.getName()!=null && result.getName()!=""){
+						textToSpeechHelper.speak(getString(R.string.incoming_call_tts, result.getName()), TextToSpeech.QUEUE_FLUSH, ttsParametersMap);
+					}
+				}catch(NoResultException e){
+					currentLookupAsyncTask = new ToastLookupAsyncTask(this, phoneNumber);
+					currentLookupAsyncTask.execute();
 				}
-			}catch(NoResultException e){
-				currentLookupAsyncTask = new ToastLookupAsyncTask(this, phoneNumber);
-				currentLookupAsyncTask.execute();
 			}
 		} else {
 			toastLayout.setVisibility(View.GONE);

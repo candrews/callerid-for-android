@@ -20,6 +20,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.ResourceCursorAdapter;
 import android.telephony.PhoneNumberUtils;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -55,6 +56,12 @@ public class RecentCallsFragment extends RoboListFragment {
 	String lookupError;
 	@InjectResource(R.string.lookup_in_progress)
 	String lookupInProgress;
+	@InjectResource(R.string.lookup_payphone)
+	String lookupPayphone;
+	@InjectResource(R.string.lookup_private)
+	String lookupPrivate;
+	@InjectResource(R.string.lookup_unknown)
+	String lookupUnknown;
 	
 	private static final int CALL_LOG_LOADER = 1;
 	
@@ -117,8 +124,15 @@ public class RecentCallsFragment extends RoboListFragment {
 			labelView.setText("");
 		}
 		@Override
-		protected void onPreExecute() throws Exception {
-			super.onPreExecute();
+		public void execute() {
+			// Overriding executive seems weird... here's why I do it:
+			// The background task (and its related preExecute/success/... handlers)
+			// should only be called when a background lookup is necessary.
+			// In the case of "special" numbers (payphone, unknown, and private)
+			// any further lookup is unnecessary and not desired, but other
+			// setup (like displaying the right icon and right text) is.
+			// By overriding execute() and only calling super.execute() when
+			// a background lookup should be done, that goal can be achieved.
 			
 			// Set the date/time field by mixing relative and absolute times.
 			dateView.setText(
@@ -127,49 +141,69 @@ public class RecentCallsFragment extends RoboListFragment {
 							System.currentTimeMillis(), 
 							DateUtils.MINUTE_IN_MILLIS, 
 							DateUtils.FORMAT_ABBREV_RELATIVE));
-			numberView.setText(PhoneNumberUtils.formatNumber(phoneNumber));
 			
-			final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
-			try{
-				final PhoneNumber phoneNumberPhoneNumber = phoneNumberUtil.parse(phoneNumber.toString(), countryDetector.getCountry());
-				final PhoneNumberOfflineGeocoder phoneNumberOfflineGeocoder = PhoneNumberOfflineGeocoder.getInstance();
-				offlineGeocoderResult = phoneNumberOfflineGeocoder.getDescriptionForNumber(phoneNumberPhoneNumber, Locale.getDefault());
-			}catch(NumberParseException e){
-				//ignore this exception
-			}
-			if("".equals(offlineGeocoderResult)) offlineGeocoderResult = null;
-			if(offlineGeocoderResult == null){
-				labelView.setText(lookupInProgress);
-				line1View.setText("");
-			}else{
-				line1View.setText(offlineGeocoderResult);
-				labelView.setText("");
-			}
-			
-             // Set the icon
-             switch (callType) {
-                 case Calls.INCOMING_TYPE:
-                	 callTypeIcon.setImageDrawable(drawableIncoming);
-                     break;
-                 case Calls.OUTGOING_TYPE:
-                	 callTypeIcon.setImageDrawable(drawableOutgoing);
-                     break;
-                 case Calls.MISSED_TYPE:
-                	 callTypeIcon.setImageDrawable(drawableMissed);
-                     break;
-             }
-             
-             callIcon.setOnClickListener(new View.OnClickListener() {
-				public void onClick(View v) {
-	                 Uri callUri;
-	                 if (CallerIDApplication.isUriNumber(phoneNumber)) {
-	                     callUri = Uri.fromParts("sip", phoneNumber, null);
-	                 } else {
-	                     callUri = Uri.fromParts("tel", phoneNumber, null);
-	                 }
-	                 startActivity(new Intent(Intent.ACTION_CALL,callUri));
+            // Set the icon
+            switch (callType) {
+                case Calls.INCOMING_TYPE:
+               	 callTypeIcon.setImageDrawable(drawableIncoming);
+                    break;
+                case Calls.OUTGOING_TYPE:
+               	 callTypeIcon.setImageDrawable(drawableOutgoing);
+                    break;
+                case Calls.MISSED_TYPE:
+               	 callTypeIcon.setImageDrawable(drawableMissed);
+                    break;
+            }
+            
+            if(TextUtils.isEmpty(phoneNumber) || SpecialPhoneNumbers.UNKNOWN_NUMBER.equals(phoneNumber)){
+                callIcon.setOnClickListener(null);
+                numberView.setText("");
+                line1View.setText(lookupUnknown);
+                labelView.setText("");
+            }else if(SpecialPhoneNumbers.PRIVATE_NUMBER.equals(phoneNumber)){
+                callIcon.setOnClickListener(null);
+                numberView.setText("");
+                line1View.setText(lookupPrivate);
+                labelView.setText("");
+            }else if(SpecialPhoneNumbers.PAYPHONE_NUMBER.equals(phoneNumber)){
+                callIcon.setOnClickListener(null);
+                numberView.setText("");
+                line1View.setText(lookupPayphone);
+                labelView.setText("");
+            }else{
+				numberView.setText(PhoneNumberUtils.formatNumber(phoneNumber));
+				
+				final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+				try{
+					final PhoneNumber phoneNumberPhoneNumber = phoneNumberUtil.parse(phoneNumber.toString(), countryDetector.getCountry());
+					final PhoneNumberOfflineGeocoder phoneNumberOfflineGeocoder = PhoneNumberOfflineGeocoder.getInstance();
+					offlineGeocoderResult = phoneNumberOfflineGeocoder.getDescriptionForNumber(phoneNumberPhoneNumber, Locale.getDefault());
+				}catch(NumberParseException e){
+					//ignore this exception
 				}
-			});
+				if("".equals(offlineGeocoderResult)) offlineGeocoderResult = null;
+				if(offlineGeocoderResult == null){
+					labelView.setText(lookupInProgress);
+					line1View.setText("");
+				}else{
+					line1View.setText(offlineGeocoderResult);
+					labelView.setText("");
+				}
+	             
+	             callIcon.setOnClickListener(new View.OnClickListener() {
+					public void onClick(View v) {
+		                 Uri callUri;
+		                 if (CallerIDApplication.isUriNumber(phoneNumber)) {
+		                     callUri = Uri.fromParts("sip", phoneNumber, null);
+		                 } else {
+		                     callUri = Uri.fromParts("tel", phoneNumber, null);
+		                 }
+		                 startActivity(new Intent(Intent.ACTION_CALL,callUri));
+					}
+				});
+	             
+	            super.execute();
+            }
 		}
 		@Override
 		protected void onException(Exception e) throws RuntimeException {

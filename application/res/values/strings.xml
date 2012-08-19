@@ -6,6 +6,9 @@
     <string name="app_name">CallerID</string>
     <string name="app_description">The CallerID app uses a web service to look up CallerID information when a call is received from a number not in the address book.</string>
     <string name="lookup_error">Error performing lookup</string>
+    <string name="lookup_unknown">Unknown</string>
+    <string name="lookup_private">Private</string>
+    <string name="lookup_payphone">Payphone</string>
     <string name="lookup_no_result">No data available</string>
     <string name="lookup_in_progress">Please wait…</string>
     <string name="create_contact">Add Contact</string>
@@ -32,5 +35,7 @@
     <string name="integralblue_signature_md5">0F43DA02C06C900890B9D7BBB3406F01</string>
     
     <string name="incoming_call_tts">Call from %s</string>
-    <string name="incoming_call_tts_unknown">Call from unknown number</string>
+    <string name="incoming_call_tts_unknown">Call from an unknown number</string>
+    <string name="incoming_call_tts_private">Call from a private number</string>
+    <string name="incoming_call_tts_payphone">Call from a payphone</string>
 </resources>
