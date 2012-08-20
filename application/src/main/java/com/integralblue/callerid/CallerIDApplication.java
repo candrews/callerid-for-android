@@ -39,8 +39,6 @@ public class CallerIDApplication extends Application {
 	        	Ln.d(e, "Strict mode not available");
 	        }
 		}
-		
-        disableConnectionReuseIfNecessary();
         
         //enable the http response cache in a thread to avoid a strict mode violation
         new Thread(){
@@ -52,29 +50,33 @@ public class CallerIDApplication extends Application {
 	}
 	
     private void enableHttpResponseCache() {
-    	// see http://android-developers.blogspot.com/2011/09/androids-http-clients.html
         final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
         final File httpCacheDir = new File(getCacheDir(), "http");
-        try {
-            Class.forName("android.net.http.HttpResponseCache")
-                .getMethod("install", File.class, long.class)
-                .invoke(null, httpCacheDir, httpCacheSize);
-        } catch (Exception httpResponseCacheNotAvailable) {
-            Ln.d(httpResponseCacheNotAvailable, "android.net.http.HttpResponseCache not available, probably because we're running on a pre-ICS version of Android. Using com.integralblue.httpresponsecache.HttpResponseCache.");
+    	if (Integer.parseInt(Build.VERSION.SDK) >= 16) { // Build.VERSION_CODES.JELLY_BEAN
+    		// com.integralblue.httpresponsecache.HttpResponseCache is based on Jelly Bean code.
+    		// So if we're on Jelly Bean or later, then the bundled Android implementation
+    		// is at least as good as com.integralblue.httpresponsecache.HttpResponseCache so use it.
+	        try {
+	            Class.forName("android.net.http.HttpResponseCache")
+	                .getMethod("install", File.class, long.class)
+	                .invoke(null, httpCacheDir, httpCacheSize);
+	        } catch (Exception httpResponseCacheNotAvailable) {
+	            Ln.d(httpResponseCacheNotAvailable, "android.net.http.HttpResponseCache failed to install. Using com.integralblue.httpresponsecache.HttpResponseCache.");
+	            try{
+	            	com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
+	            }catch(Exception e){
+	            	Ln.e(e, "Failed to set up com.integralblue.httpresponsecache.HttpResponseCache");
+	            }
+	        }
+    	}else{
+    		// we're running on a version of Android before Jelly Bean, so
+    		// com.integralblue.httpresponsecache.HttpResponseCache is always superior.
             try{
             	com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
             }catch(Exception e){
             	Ln.e(e, "Failed to set up com.integralblue.httpresponsecache.HttpResponseCache");
             }
-        }
-    }
-
-    private void disableConnectionReuseIfNecessary() {
-        // HTTP connection reuse which was buggy pre-froyo
-    // see http://android-developers.blogspot.com/2011/09/androids-http-clients.html
-        if (Integer.parseInt(Build.VERSION.SDK) < Build.VERSION_CODES.FROYO) {
-            System.setProperty("http.keepAlive", "false");
-        }
+    	}
     }
 
 	public boolean isDebugMode() {
