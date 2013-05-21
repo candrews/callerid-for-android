@@ -19,9 +19,9 @@
 			<artifactId>android</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.integralblue</groupId>
-			<artifactId>httpresponsecache</artifactId>
-			<version>1.2</version>
+			<groupId>com.squareup.okhttp</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>1.0.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

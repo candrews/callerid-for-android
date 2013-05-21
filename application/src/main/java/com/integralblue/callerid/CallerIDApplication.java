@@ -2,6 +2,16 @@ package com.integralblue.callerid;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.net.ResponseCache;
+import java.net.URL;
+import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import com.squareup.okhttp.HttpResponseCache;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkHttpURLStreamHandlerFactory;
 
 import roboguice.util.Ln;
 
@@ -52,31 +62,32 @@ public class CallerIDApplication extends Application {
     private void enableHttpResponseCache() {
         final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
         final File httpCacheDir = new File(getCacheDir(), "http");
-    	if (Integer.parseInt(Build.VERSION.SDK) >= 16) { // Build.VERSION_CODES.JELLY_BEAN
-    		// com.integralblue.httpresponsecache.HttpResponseCache is based on Jelly Bean code.
-    		// So if we're on Jelly Bean or later, then the bundled Android implementation
-    		// is at least as good as com.integralblue.httpresponsecache.HttpResponseCache so use it.
+    	if (Integer.parseInt(Build.VERSION.SDK) >= 18) {
+    		// com.squareup.okhttp is at least API 18
+    		// So if we're on that or later, then the bundled Android implementation
 	        try {
 	            Class.forName("android.net.http.HttpResponseCache")
 	                .getMethod("install", File.class, long.class)
 	                .invoke(null, httpCacheDir, httpCacheSize);
 	        } catch (Exception httpResponseCacheNotAvailable) {
-	            Ln.d(httpResponseCacheNotAvailable, "android.net.http.HttpResponseCache failed to install. Using com.integralblue.httpresponsecache.HttpResponseCache.");
-	            try{
-	            	com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
-	            }catch(Exception e){
-	            	Ln.e(e, "Failed to set up com.integralblue.httpresponsecache.HttpResponseCache");
-	            }
+	            Ln.d(httpResponseCacheNotAvailable, "android.net.http.HttpResponseCache failed to install. Using okhttp.");
+	        	installHttpHandler(httpCacheSize, httpCacheDir);
 	        }
     	}else{
     		// we're running on a version of Android before Jelly Bean, so
     		// com.integralblue.httpresponsecache.HttpResponseCache is always superior.
-            try{
-            	com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
-            }catch(Exception e){
-            	Ln.e(e, "Failed to set up com.integralblue.httpresponsecache.HttpResponseCache");
-            }
+        	installHttpHandler(httpCacheSize, httpCacheDir);
     	}
+    }
+    
+    private void installHttpHandler(long httpCacheSize, File httpCacheDir ){
+        try{
+            HttpResponseCache result = new HttpResponseCache(httpCacheDir, httpCacheSize);
+            ResponseCache.setDefault(result);
+            URL.setURLStreamHandlerFactory(new OkHttpURLStreamHandlerFactory(new OkHttpClient()));
+        }catch(Exception e){
+        	Ln.e(e, "Failed to set up okhttp");
+        }
     }
 
 	public boolean isDebugMode() {
