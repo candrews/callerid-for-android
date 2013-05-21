@@ -1,5 +1,7 @@
 The CallerID Android application uses a web service to provide CallerID information when the phone rings, or when a user inputs a phone number to lookup.
 
+[![Build Status](https://travis-ci.org/candrews/callerid-for-android.png?branch=master)](https://travis-ci.org/candrews/callerid-for-android)
+
 To import this project into Eclipse:
 1. Install Eclipse
 2. Install Android Developer Tools
