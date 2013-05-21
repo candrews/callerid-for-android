@@ -9,4 +9,3 @@ To import this project into Eclipse:
 See https://code.google.com/a/eclipselabs.org/p/m2eclipse-android-integration/wiki/GettingStarted for links/directions.
 
 Once you have everything, from Eclipse, select File->Import...->Maven->Existing Maven Projects and select the directory with this source.
-Note that each imported project may include a reference to the system Java JDK. If so, remove that reference. See https://code.google.com/a/eclipselabs.org/p/m2eclipse-android-integration/issues/detail?id=41
