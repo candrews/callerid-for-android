@@ -2,7 +2,7 @@ package com.integralblue.callerid;
 
 import java.io.Serializable;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CallerIDResult implements Serializable {
 	private static final long serialVersionUID = 3737128577227643432L;

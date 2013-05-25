@@ -1,7 +1,7 @@
 package com.integralblue.callerid.inject;
 
-import org.codehaus.jackson.map.DeserializationConfig.Feature;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.client.RestTemplate;
 
 import roboguice.inject.SharedPreferencesName;
@@ -29,7 +29,7 @@ public class CallerIDModule extends AbstractModule {
 		bind(CountryDetector.class).in(Scopes.SINGLETON);
 		
 		final ObjectMapper jsonObjectMapper = new ObjectMapper();
-		jsonObjectMapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		jsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		bind(ObjectMapper.class).annotatedWith(Names.named(("jsonObjectMapper"))).toInstance(jsonObjectMapper);
 		bind(RestTemplate.class).toProvider(RestTemplateProvider.class).in(Scopes.SINGLETON);
 		
