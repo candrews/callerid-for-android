@@ -4,21 +4,16 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.ResponseCache;
 import java.net.URL;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import com.squareup.okhttp.HttpResponseCache;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkHttpURLStreamHandlerFactory;
 
 import roboguice.util.Ln;
-
 import android.app.Application;
 import android.app.Instrumentation;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
+
+import com.squareup.okhttp.HttpResponseCache;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkHttpURLStreamHandlerFactory;
 
 public class CallerIDApplication extends Application {
 	
