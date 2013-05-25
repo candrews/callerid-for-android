@@ -15,7 +15,7 @@ android:debuggable="${android.debuggable}"
 		around a service which would not work (and would not be restarted) if the 
 		application was to be installed on external storage and the storage unmounted -->
 
-	<uses-sdk android:minSdkVersion="8" android:targetSdkVersion="16" />
+	<uses-sdk android:minSdkVersion="10" android:targetSdkVersion="16" />
 
 	<uses-permission android:name="android.permission.READ_CALL_LOG" />
 	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
